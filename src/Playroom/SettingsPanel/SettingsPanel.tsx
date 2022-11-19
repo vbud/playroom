@@ -79,7 +79,7 @@ export default ({}: SettingsPanelProps) => {
             <Heading level="3">Color Scheme</Heading>
           </legend>
           <div className={styles.radioContainer}>
-            {['Light', 'Dark', 'System'].map((option) => (
+            {['System', 'Light', 'Dark'].map((option) => (
               <div key={option}>
                 <input
                   type="radio"
