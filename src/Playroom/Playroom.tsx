@@ -7,7 +7,6 @@ import WindowPortal from './WindowPortal';
 import { Snippets } from '../../utils';
 import componentsToHints from '../utils/componentsToHints';
 import Toolbar, { toolbarItemCount } from './Toolbar/Toolbar';
-import ChevronIcon from './icons/ChevronIcon';
 import { StatusMessage } from './StatusMessage/StatusMessage';
 import { StoreContext, EditorPosition } from '../StoreContext/StoreContext';
 
@@ -31,17 +30,6 @@ const resizableConfig = (position: EditorPosition = 'bottom') => ({
   bottomLeft: false,
   topLeft: false,
 });
-
-const resolveDirection = (
-  editorPosition: EditorPosition,
-  editorHidden: boolean
-) => {
-  if (editorPosition === 'right') {
-    return editorHidden ? 'left' : 'right';
-  }
-
-  return editorHidden ? 'up' : 'down';
-};
 
 export interface PlayroomProps {
   components: Record<string, ComponentType>;
@@ -181,24 +169,6 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
             visibleWidths && visibleWidths.length > 0 ? visibleWidths : widths
           }
         />
-        <div
-          className={classnames(styles.toggleEditorContainer, {
-            [styles.isBottom]: isHorizontalEditor,
-          })}
-        >
-          <button
-            className={styles.toggleEditorButton}
-            title={`${editorHidden ? 'Show' : 'Hide'} the editor`}
-            onClick={() =>
-              dispatch({ type: editorHidden ? 'showEditor' : 'hideEditor' })
-            }
-          >
-            <ChevronIcon
-              size={16}
-              direction={resolveDirection(editorPosition, editorHidden)}
-            />
-          </button>
-        </div>
       </div>
       {editorContainer}
     </div>
