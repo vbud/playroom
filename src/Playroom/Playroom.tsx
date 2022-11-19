@@ -8,28 +8,15 @@ import { Snippets } from '../../utils';
 import componentsToHints from '../utils/componentsToHints';
 import Toolbar, { toolbarItemCount } from './Toolbar/Toolbar';
 import { StatusMessage } from './StatusMessage/StatusMessage';
-import { StoreContext, EditorPosition } from '../StoreContext/StoreContext';
-
-const MIN_HEIGHT = toolbarItemSize * toolbarItemCount;
-const MIN_WIDTH = toolbarOpenSize + toolbarItemSize + 80;
-
-// @ts-ignore
+import { StoreContext } from '../StoreContext/StoreContext';
 import { CodeEditor } from './CodeEditor/CodeEditor';
 
 import * as styles from './Playroom.css';
 import { toolbarOpenSize } from './Toolbar/Toolbar.css';
 import { toolbarItemSize } from './ToolbarItem/ToolbarItem.css';
 
-const resizableConfig = (position: EditorPosition = 'bottom') => ({
-  top: position === 'bottom',
-  right: false,
-  bottom: false,
-  left: position === 'right',
-  topRight: false,
-  bottomRight: false,
-  bottomLeft: false,
-  topLeft: false,
-});
+const MIN_HEIGHT = toolbarItemSize * toolbarItemCount;
+const MIN_WIDTH = toolbarOpenSize + toolbarItemSize + 80;
 
 export interface PlayroomProps {
   components: Record<string, ComponentType>;
@@ -101,11 +88,9 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
       </div>
     </Fragment>
   );
-
-  const isVerticalEditor = editorPosition === 'right';
-  const isHorizontalEditor = editorPosition === 'bottom';
+  const isVerticalEditor = editorPosition === 'left';
   const sizeStyles = {
-    height: isHorizontalEditor ? `${editorHeight}px` : 'auto', // issue in ff & safari when not a string
+    height: 'auto',
     width: isVerticalEditor ? `${editorWidth}px` : 'auto',
   };
   const editorContainer =
@@ -121,8 +106,7 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
     ) : (
       <Resizable
         className={classnames(styles.resizeableContainer, {
-          [styles.resizeableContainer_isRight]: isVerticalEditor,
-          [styles.resizeableContainer_isBottom]: isHorizontalEditor,
+          [styles.resizeableContainer_isLeft]: isVerticalEditor,
           [styles.resizeableContainer_isHidden]: editorHidden,
         })}
         defaultSize={sizeStyles}
@@ -132,7 +116,16 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
         onResize={(_event, _direction, { offsetWidth, offsetHeight }) => {
           updateEditorSize({ isVerticalEditor, offsetWidth, offsetHeight });
         }}
-        enable={resizableConfig(editorPosition)}
+        enable={{
+          top: false,
+          right: true,
+          bottom: false,
+          left: false,
+          topRight: false,
+          bottomRight: false,
+          bottomLeft: false,
+          topLeft: false,
+        }}
       >
         {codeEditor}
       </Resizable>
@@ -154,7 +147,7 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
           editorHidden
             ? undefined
             : {
-                right: { right: editorWidth },
+                left: { left: editorWidth },
                 bottom: { bottom: editorHeight },
                 undocked: undefined,
               }[editorPosition]

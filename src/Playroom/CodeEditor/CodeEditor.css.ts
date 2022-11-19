@@ -1,5 +1,5 @@
 import { style, globalStyle, keyframes } from '@vanilla-extract/css';
-import { vars, colorPaletteVars, sprinkles } from '../sprinkles.css';
+import { colorPaletteVars, vars } from '../theme.css';
 
 const minimumLineNumberWidth = '50px';
 
@@ -16,13 +16,11 @@ const fadeIn = keyframes({
   },
 });
 export const errorMarker = style([
-  sprinkles({
-    borderRadius: 'large',
+  {
+    borderRadius: vars.radii.large,
     position: 'relative',
     textAlign: 'right',
     opacity: 0,
-  }),
-  {
     backgroundColor: colorPaletteVars.background.critical,
     color: colorPaletteVars.foreground.critical,
     minWidth: minimumLineNumberWidth,
@@ -41,24 +39,20 @@ export const foldGutter = style({
   padding: '0 8px',
 });
 
-export const foldOpen = style([
-  sprinkles({ cursor: 'pointer' }),
-  {
-    '::after': {
-      content: '-',
-    },
+export const foldOpen = style({
+  cursor: 'pointer',
+  '::after': {
+    content: '-',
   },
-]);
+});
 
-export const foldFolded = style([
-  sprinkles({ cursor: 'pointer' }),
-  {
-    '::after': {
-      content: '+',
-      color: colorPaletteVars.foreground.accent,
-    },
+export const foldFolded = style({
+  cursor: 'pointer',
+  '::after': {
+    content: '+',
+    color: colorPaletteVars.foreground.accent,
   },
-]);
+});
 
 globalStyle('.react-codemirror2', {
   height: '100%',
@@ -168,7 +162,6 @@ globalStyle('.cm-s-neo .CodeMirror-guttermarker-subtle', {
   display: 'flex',
   justifyContent: 'center',
   color: colorPaletteVars.foreground.neutral,
-  transition: vars.transition.fast,
 });
 
 globalStyle(
@@ -181,7 +174,6 @@ globalStyle(
 globalStyle('.cm-s-neo .CodeMirror-linenumber', {
   minWidth: minimumLineNumberWidth,
   color: colorPaletteVars.foreground.neutral,
-  transition: vars.transition.fast,
 });
 
 globalStyle(

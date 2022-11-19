@@ -76,7 +76,7 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
       )}
       <div className={styles.sidebar}>
         <div className={styles.buttons}>
-          <div className={styles.topButtons}>
+          <div>
             {hasSnippets && (
               <ToolbarItem
                 active={isSnippetsOpen}
@@ -150,12 +150,9 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
           </div>
         </div>
 
-        <div className={styles.panel}>
-          {isSnippetsOpen && (
-            <div
-              hidden={isSnippetsOpen ? undefined : true}
-              className={styles.preference}
-            >
+        {isOpen && (
+          <div className={styles.panel}>
+            {isSnippetsOpen && (
               <Snippets
                 snippets={snippets}
                 onHighlight={(snippet) => {
@@ -175,32 +172,21 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
                   }
                 }}
               />
-            </div>
-          )}
-          <div
-            hidden={isFramesOpen ? undefined : true}
-            className={styles.preference}
-          >
-            <FramesPanel
-              availableWidths={allWidths}
-              availableThemes={allThemes}
-            />
-          </div>
+            )}
+            {isFramesOpen && (
+              <FramesPanel
+                availableWidths={allWidths}
+                availableThemes={allThemes}
+              />
+            )}
 
-          <div
-            hidden={isPreviewOpen ? undefined : true}
-            className={styles.preference}
-          >
-            <PreviewPanel themes={allThemes} visibleThemes={visibleThemes} />
-          </div>
+            {isPreviewOpen && (
+              <PreviewPanel themes={allThemes} visibleThemes={visibleThemes} />
+            )}
 
-          <div
-            hidden={isSettingsOpen ? undefined : true}
-            className={styles.preference}
-          >
-            <SettingsPanel />
+            {isSettingsOpen && <SettingsPanel />}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { style } from '@vanilla-extract/css';
-import { sprinkles, colorPaletteVars } from '../sprinkles.css';
+import { colorPaletteVars, vars } from '../theme.css';
 
-export const base = sprinkles({
+export const base = style({
   display: 'block',
 });
 
@@ -13,32 +13,28 @@ export const critical = style({
   color: colorPaletteVars.foreground.critical,
 });
 
-export const xsmall = sprinkles({
-  font: 'xsmall',
+export const xsmall = style({
+  font: vars.font.scale.xsmall,
 });
 
-export const small = sprinkles({
-  font: 'small',
+export const small = style({
+  font: vars.font.scale.small,
 });
 
-export const standard = sprinkles({
-  font: 'standard',
+export const standard = style({
+  font: vars.font.scale.standard,
 });
 
-export const large = sprinkles({
-  font: 'large',
+export const large = style({
+  font: vars.font.scale.large,
 });
 
-export const strong = sprinkles({
-  fontWeight: 'strong',
+export const strong = style({
+  fontWeight: vars.font.weight.strong,
 });
 
-export const truncate = style([
-  sprinkles({
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-  }),
-  {
-    textOverflow: 'ellipsis',
-  },
-]);
+export const truncate = style({
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+});

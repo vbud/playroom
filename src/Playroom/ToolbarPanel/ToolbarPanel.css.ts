@@ -1,5 +1,7 @@
-import { sprinkles } from '../sprinkles.css';
+import { style } from '@vanilla-extract/css';
+import { vars } from '../theme.css';
 
-export const root = sprinkles({
-  padding: 'xxlarge',
+export const root = style({
+  padding: vars.space.xxlarge,
+  width: '100%',
 });

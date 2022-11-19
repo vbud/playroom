@@ -10,6 +10,21 @@ export default [
     code: '<Foo color="red">Red Foo</Foo>',
   },
   {
+    group: 'Foo',
+    name: 'A',
+    code: '<Foo>A</Foo>',
+  },
+  {
+    group: 'Foo',
+    name: 'B',
+    code: '<Foo>B</Foo>',
+  },
+  {
+    group: 'Foo',
+    name: 'C',
+    code: '<Foo>C</Foo>',
+  },
+  {
     group: 'Bar',
     name: 'Default',
     code: '<Bar>Bar</Bar>',

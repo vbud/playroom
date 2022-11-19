@@ -1,16 +1,12 @@
 import { style } from '@vanilla-extract/css';
-import { sprinkles, colorPaletteVars } from '../sprinkles.css';
+import { colorPaletteVars } from '../theme.css';
 
-export const root = sprinkles({
+export const root = style({
   position: 'relative',
 });
 
-export const divider = style([
-  sprinkles({
-    position: 'absolute',
-    width: 'full',
-  }),
-  {
-    borderTop: `1px solid ${colorPaletteVars.border.standard}`,
-  },
-]);
+export const divider = style({
+  position: 'absolute',
+  width: '100%',
+  borderTop: `1px solid ${colorPaletteVars.border.standard}`,
+});

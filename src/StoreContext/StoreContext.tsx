@@ -25,10 +25,10 @@ const store = localforage.createInstance({
   version: 1,
 });
 
-const defaultPosition = 'bottom';
-
-export type EditorPosition = 'bottom' | 'right' | 'undocked';
+export type EditorPosition = 'left' | 'undocked';
 export type ColorScheme = 'light' | 'dark' | 'system';
+
+const defaultPosition: EditorPosition = 'left';
 
 const applyColorScheme = (colorScheme: Exclude<ColorScheme, 'system'>) => {
   document.documentElement[

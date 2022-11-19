@@ -1,6 +1,6 @@
 import { transparentize, mix, darken } from 'polished';
 
-const originalPalette = {
+const lightPalette = {
   blue0: '#e5f3ff',
   blue1: '#0088ff',
   blue2: '#005ad2',
@@ -24,43 +24,43 @@ const originalPalette = {
 
 export const light = {
   code: {
-    text: originalPalette.black,
-    tag: originalPalette.blue4,
-    attribute: originalPalette.blue2,
-    string: originalPalette.blue3,
-    atom: originalPalette.blue3,
-    variable: originalPalette.blue1,
-    number: originalPalette.purple,
+    text: lightPalette.black,
+    tag: lightPalette.blue4,
+    attribute: lightPalette.blue2,
+    string: lightPalette.blue3,
+    atom: lightPalette.blue3,
+    variable: lightPalette.blue1,
+    number: lightPalette.purple,
   },
   foreground: {
-    neutralSoft: originalPalette.gray3,
-    neutral: originalPalette.gray5,
-    neutralInverted: originalPalette.white,
-    secondary: originalPalette.gray3,
-    critical: originalPalette.red3,
-    accent: originalPalette.blue2,
-    positive: originalPalette.green2,
+    neutralSoft: lightPalette.gray3,
+    neutral: lightPalette.gray5,
+    neutralInverted: lightPalette.white,
+    secondary: lightPalette.gray3,
+    critical: lightPalette.red3,
+    accent: lightPalette.blue2,
+    positive: lightPalette.green2,
   },
   background: {
     transparent: 'rgba(0, 0, 0, .05)',
-    accent: originalPalette.blue2,
-    positive: originalPalette.green1,
-    critical: originalPalette.red1,
-    neutral: originalPalette.gray6,
-    surface: originalPalette.white,
-    body: originalPalette.gray1,
-    selection: originalPalette.blue0,
+    accent: lightPalette.blue2,
+    positive: lightPalette.green1,
+    critical: lightPalette.red1,
+    neutral: lightPalette.gray6,
+    surface: lightPalette.white,
+    body: lightPalette.gray1,
+    selection: lightPalette.blue0,
   },
   border: {
-    standard: originalPalette.gray2,
+    standard: lightPalette.gray2,
   },
   shadows: {
     small: '0 2px 8px rgba(18, 21, 26, 0.3)',
-    focus: `0 0 0 5px ${originalPalette.blue0}`,
+    focus: `0 0 0 5px ${lightPalette.blue0}`,
   },
 };
 
-const seekPalette = {
+const darkPalette = {
   grey: {
     900: '#0f131b',
     800: '#1c2230',
@@ -125,38 +125,38 @@ const seekPalette = {
 
 export const dark = {
   code: {
-    text: seekPalette.grey[50],
-    tag: seekPalette.blue[200],
-    attribute: seekPalette.blue[400],
-    string: seekPalette.blue[300],
-    atom: seekPalette.blue[300],
-    variable: seekPalette.blue[500],
-    number: seekPalette.purple[400],
+    text: darkPalette.grey[50],
+    tag: darkPalette.blue[200],
+    attribute: darkPalette.blue[400],
+    string: darkPalette.blue[300],
+    atom: darkPalette.blue[300],
+    variable: darkPalette.blue[500],
+    number: darkPalette.purple[400],
   },
   foreground: {
-    neutralSoft: seekPalette.grey[600],
-    neutral: seekPalette.grey[50],
-    neutralInverted: originalPalette.black,
-    secondary: seekPalette.grey[400],
-    critical: seekPalette.red[400],
-    accent: seekPalette.blue[500],
-    positive: seekPalette.mint[500],
+    neutralSoft: darkPalette.grey[600],
+    neutral: darkPalette.grey[50],
+    neutralInverted: lightPalette.black,
+    secondary: darkPalette.grey[400],
+    critical: darkPalette.red[400],
+    accent: darkPalette.blue[500],
+    positive: darkPalette.mint[500],
   },
   background: {
     transparent: 'rgba(0, 0, 0, .15)',
-    accent: seekPalette.blue[500],
-    positive: mix(0.6, seekPalette.grey[900], seekPalette.mint[500]),
-    critical: mix(0.7, seekPalette.grey[900], seekPalette.red[600]),
-    neutral: seekPalette.grey[800],
-    surface: seekPalette.grey[900],
-    body: darken(0.03, seekPalette.grey[900]),
-    selection: transparentize(0.85, seekPalette.blue[600]),
+    accent: darkPalette.blue[500],
+    positive: mix(0.6, darkPalette.grey[900], darkPalette.mint[500]),
+    critical: mix(0.7, darkPalette.grey[900], darkPalette.red[600]),
+    neutral: darkPalette.grey[800],
+    surface: darkPalette.grey[900],
+    body: darken(0.03, darkPalette.grey[900]),
+    selection: transparentize(0.85, darkPalette.blue[600]),
   },
   border: {
-    standard: seekPalette.grey[800],
+    standard: darkPalette.grey[800],
   },
   shadows: {
-    small: `0 0 10px -2px ${seekPalette.grey[700]}`,
-    focus: `0 0 0 5px ${transparentize(0.6, seekPalette.blue[400])}`,
+    small: `0 0 10px -2px ${darkPalette.grey[700]}`,
+    focus: `0 0 0 5px ${transparentize(0.6, darkPalette.blue[400])}`,
   },
 };

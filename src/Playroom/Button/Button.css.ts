@@ -1,21 +1,19 @@
 import { style, createVar } from '@vanilla-extract/css';
 import { calc } from '@vanilla-extract/css-utils';
-import { sprinkles, vars, colorPaletteVars } from '../sprinkles.css';
+import { colorPaletteVars, vars } from '../theme.css';
 
 export const reset = style([
-  sprinkles({
+  {
     boxSizing: 'border-box',
     border: 0,
-    margin: 'none',
-    padding: 'none',
+    margin: 0,
+    padding: 0,
     appearance: 'none',
     userSelect: 'none',
     position: 'relative',
     cursor: 'pointer',
     display: 'flex',
     placeItems: 'center',
-  }),
-  {
     background: 'transparent',
     outline: 'none',
     textDecoration: 'none',
@@ -29,16 +27,13 @@ export const reset = style([
 const highlightColor = createVar();
 
 export const base = style([
-  sprinkles({
-    borderRadius: 'large',
-    paddingY: 'none',
-    paddingX: 'large',
-    font: 'standard',
-  }),
   {
     vars: {
       [highlightColor]: 'currentColor',
     },
+    padding: `0 ${vars.space.large}`,
+    font: vars.font.family.standard,
+    borderRadius: vars.radii.large,
     color: highlightColor,
     border: `1px solid ${colorPaletteVars.foreground.neutralSoft}`,
     height: calc(vars.grid).multiply(9).toString(),
@@ -78,8 +73,9 @@ export const positive = style({
 });
 
 export const iconContainer = style([
-  sprinkles({ position: 'relative', paddingLeft: 'medium' }),
   {
-    top: '1px',
+    position: 'relative',
+    paddingLeft: vars.space.medium,
+    top: 1,
   },
 ]);

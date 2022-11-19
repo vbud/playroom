@@ -63,7 +63,7 @@ export default function Iframe({
       }}
       style={{
         ...style,
-        transition: 'opacity .3s ease',
+
         opacity: loaded ? 1 : 0,
       }}
       {...restProps}

@@ -1,28 +1,23 @@
 import { style, globalStyle, keyframes } from '@vanilla-extract/css';
-import { sprinkles, colorPaletteVars } from '../sprinkles.css';
+import { colorPaletteVars } from '../theme.css';
 
 export const animationDuration = 1300;
 export const animationDelay = 500;
 export const animationIterationCount = 2;
 
-export const root = style([
-  sprinkles({
-    position: 'fixed',
-    inset: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    transition: 'slow',
-  }),
-  {
-    zIndex: 100,
-    background: colorPaletteVars.background.neutral,
-    color: colorPaletteVars.foreground.neutralInverted,
-  },
-]);
+export const root = style({
+  position: 'fixed',
+  inset: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  textAlign: 'center',
+  zIndex: 100,
+  background: colorPaletteVars.background.neutral,
+  color: colorPaletteVars.foreground.neutralInverted,
+});
 
-export const hideSplash = sprinkles({
+export const hideSplash = style({
   opacity: 0,
   pointerEvents: 'none',
 });

@@ -1,11 +1,11 @@
-import { sprinkles } from './sprinkles.css';
+import { style } from '@vanilla-extract/css';
 
-export const renderContainer = sprinkles({
+export const renderContainer = style({
   position: 'relative',
   zIndex: 0,
 });
 
-export const splashScreenContainer = sprinkles({
+export const splashScreenContainer = style({
   position: 'relative',
   zIndex: 1,
 });

@@ -1,6 +1,7 @@
-import { sprinkles } from '../sprinkles.css';
+import { style } from '@vanilla-extract/css';
+import { vars } from '../theme.css';
 
-export const strong = sprinkles({
+export const strong = style({
   display: 'inline',
-  fontWeight: 'strong',
+  fontWeight: vars.font.weight.strong,
 });

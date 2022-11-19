@@ -7,8 +7,7 @@ import {
   StoreContext,
 } from '../../StoreContext/StoreContext';
 import { Stack } from '../Stack/Stack';
-import EditorRightIcon from '../icons/EditorRightIcon';
-import EditorBottomIcon from '../icons/EditorBottomIcon';
+import EditorLeftIcon from '../icons/EditorLeftIcon';
 import EditorUndockedIcon from '../icons/EditorUndockedIcon';
 
 import * as styles from './SettingsPanel.css';
@@ -18,8 +17,7 @@ import ColorModeDarkIcon from '../icons/ColorModeDarkIcon';
 
 const positionIcon: Record<EditorPosition, ReactChild> = {
   undocked: <EditorUndockedIcon />,
-  right: <EditorRightIcon />,
-  bottom: <EditorBottomIcon />,
+  left: <EditorLeftIcon />,
 };
 
 const colorModeIcon: Record<ColorScheme, ReactChild> = {
@@ -41,7 +39,7 @@ export default ({}: SettingsPanelProps) => {
             <Heading level="3">Editor Position</Heading>
           </legend>
           <div className={styles.radioContainer}>
-            {['Bottom', 'Right'].map((option) => (
+            {['Left', 'Undocked'].map((option) => (
               <div key={option}>
                 <input
                   type="radio"

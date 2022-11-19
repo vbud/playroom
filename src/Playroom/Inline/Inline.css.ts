@@ -1,19 +1,15 @@
 import { calc } from '@vanilla-extract/css-utils';
 import { createVar, style } from '@vanilla-extract/css';
-import { sprinkles, vars } from '../sprinkles.css';
+import { vars } from '../theme.css';
 
 const size = createVar();
 
-export const root = style([
-  sprinkles({
-    display: 'flex',
-    flexWrap: 'wrap',
-  }),
-  {
-    marginTop: calc(size).negate().toString(),
-    marginLeft: calc(size).negate().toString(),
-  },
-]);
+export const root = style({
+  display: 'flex',
+  flexWrap: 'wrap',
+  marginTop: calc(size).negate().toString(),
+  marginLeft: calc(size).negate().toString(),
+});
 
 export const item = style({
   paddingTop: size,
