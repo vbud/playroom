@@ -151,7 +151,15 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
     );
 
   return (
-    <div className={styles.root}>
+    <div
+      className={styles.root}
+      onKeyDown={(event: React.KeyboardEvent) => {
+        if (event.code === 'Backslash' && event.metaKey) {
+          event.preventDefault();
+          dispatch({ type: editorHidden ? 'showEditor' : 'hideEditor' });
+        }
+      }}
+    >
       <div
         className={styles.previewContainer}
         style={
