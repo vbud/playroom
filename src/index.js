@@ -11,7 +11,7 @@ const polyfillIntersectionObserver = () =>
     : import('intersection-observer');
 
 polyfillIntersectionObserver().then(() => {
-  const widths = playroomConfig.widths || [320, 375, 768, 1024];
+  const widths = playroomConfig.widths || [1400, 1024, 768, 375, 320];
 
   const outlet = document.createElement('div');
   document.body.appendChild(outlet);
