@@ -454,22 +454,14 @@ export const StoreProvider = ({
       widthsFromQuery = parsedWidths;
     }
 
-    Promise.all<
-      string | null,
-      EditorPosition | null,
-      number | null,
-      number | null,
-      number[] | null,
-      string[] | null,
-      ColorScheme | null
-    >([
-      store.getItem('code'),
-      store.getItem('editorPosition'),
-      store.getItem('editorHeight'),
-      store.getItem('editorWidth'),
-      store.getItem('visibleWidths'),
-      store.getItem('visibleThemes'),
-      store.getItem('colorScheme'),
+    Promise.all([
+      store.getItem<State['code']>('code'),
+      store.getItem<State['editorPosition']>('editorPosition'),
+      store.getItem<State['editorHeight']>('editorHeight'),
+      store.getItem<State['editorWidth']>('editorWidth'),
+      store.getItem<State['visibleWidths']>('visibleWidths'),
+      store.getItem<State['visibleThemes']>('visibleThemes'),
+      store.getItem<State['colorScheme']>('colorScheme'),
     ]).then(
       ([
         storedCode,
@@ -489,18 +481,22 @@ export const StoreProvider = ({
           hasThemesConfigured && (themesFromQuery || storedVisibleThemes);
         const colorScheme = storedColorScheme;
 
+        const payload: Partial<State> = {
+          ready: true,
+        };
+        /* eslint-disable @typescript-eslint/no-unused-expressions */
+        code && (payload.code = code);
+        editorPosition && (payload.editorPosition = editorPosition);
+        editorHeight && (payload.editorHeight = editorHeight);
+        editorWidth && (payload.editorWidth = editorWidth);
+        visibleThemes && (payload.visibleThemes = visibleThemes);
+        visibleWidths && (payload.visibleWidths = visibleWidths);
+        colorScheme && (payload.colorScheme = colorScheme);
+        /* eslint-enable */
+
         dispatch({
           type: 'initialLoad',
-          payload: {
-            ...(code ? { code } : {}),
-            ...(editorPosition ? { editorPosition } : {}),
-            ...(editorHeight ? { editorHeight } : {}),
-            ...(editorWidth ? { editorWidth } : {}),
-            ...(visibleThemes ? { visibleThemes } : {}),
-            ...(visibleWidths ? { visibleWidths } : {}),
-            ...(colorScheme ? { colorScheme } : {}),
-            ready: true,
-          },
+          payload,
         });
       }
     );
