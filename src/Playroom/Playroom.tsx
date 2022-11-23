@@ -70,6 +70,8 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
     return null;
   }
 
+  const hints = componentsToHints(components);
+
   const codeEditor = (
     <Fragment>
       <div className={styles.editorContainer}>
@@ -79,7 +81,7 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
             dispatch({ type: 'updateCode', payload: { code: newCode } })
           }
           previewCode={previewEditorCode}
-          hints={componentsToHints(components)}
+          hints={hints}
         />
         <StatusMessage />
       </div>

@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "es5",
     "noEmit": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -7,9 +9,7 @@
     "resolveJsonModule": true,
     "noUnusedLocals": true,
     "strict": true,
-    "jsx": "preserve",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "target": "es5"
+    "jsx": "preserve"
   },
-  "include": ["lib", "src", "@types"]
+  "include": ["lib", "src"]
 }

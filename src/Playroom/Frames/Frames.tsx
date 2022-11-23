@@ -30,7 +30,10 @@ export default function Frames({ code, themes, widths }: FramesProps) {
   );
 
   try {
-    renderCode = compileJsx(code);
+    const compiled = compileJsx(code);
+    if (typeof compiled === 'string') {
+      renderCode = compiled;
+    }
   } catch (e) {}
 
   return (

@@ -71,7 +71,10 @@ const validateCode = (editorInstance: Editor, code: string) => {
   try {
     compileJsx(code);
   } catch (err) {
-    const errorMessage = err && (err.message || '');
+    let errorMessage = '';
+    if (err instanceof Error) {
+      errorMessage = err.message;
+    }
     const matches = errorMessage.match(/\(([0-9]+):/);
     const lineNumber =
       matches && matches.length >= 2 && matches[1] && parseInt(matches[1], 10);
@@ -82,7 +85,7 @@ const validateCode = (editorInstance: Editor, code: string) => {
       marker.setAttribute(
         'title',
         // Remove our wrapping Fragment from error message
-        (err.message || '')
+        (errorMessage || '')
           .replace(/\<React\.Fragment\>/, '')
           .replace(/\<\/React\.Fragment\>$/, '')
       );
@@ -135,7 +138,7 @@ export const CodeEditor = ({ code, onChange, previewCode, hints }: Props) => {
           ? e.metaKey
           : e.ctrlKey;
 
-        if (cmdOrCtrl && e.keyCode === 83) {
+        if (cmdOrCtrl && e.code === 'KeyS') {
           e.preventDefault();
           const { code: formattedCode, cursor: formattedCursor } = format({
             code: editorInstanceRef.current.getValue(),

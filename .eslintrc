@@ -12,5 +12,10 @@
         "no-process-exit": 0
       }
     }
-  ]
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
 }

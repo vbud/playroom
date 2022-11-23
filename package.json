@@ -6,6 +6,7 @@
     "playroom": "bin/cli.js"
   },
   "scripts": {
+    "prepare": "husky install",
     "cypress": "start-server-and-test build-and-serve:all '9000|9001' 'cypress run'",
     "cypress:dev": "start-server-and-test start:all '9000|9001' 'cypress open'",
     "start:basic": "./bin/cli.js start --config cypress/projects/basic/playroom.config.js",
@@ -16,8 +17,8 @@
     "serve:themed": "PORT=9001 serve --config ../serve.json cypress/projects/themed/dist",
     "build-and-serve:all": "pnpm build:all && pnpm serve:all",
     "commit": "git-cz",
-    "lint": "eslint . && prettier --list-different '**/*.{js,md,less,ts,tsx}' && tsc --noEmit",
-    "format": "prettier --write '**/*.{js,md,less,ts,tsx}'",
+    "lint": "eslint && prettier --list-different '**/*.{js,md,ts,tsx}' && tsc --noEmit",
+    "format": "prettier --write '**/*.{js,md,ts,tsx}'",
     "semantic-release": "semantic-release",
     "test": "jest src",
     "post-commit-status": "node scripts/postCommitStatus.js",
@@ -92,7 +93,9 @@
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.22.0",
     "eslint-config-seek": "^7.0.8",
+    "husky": "^8.0.2",
     "jest": "^26.6.3",
+    "lint-staged": "^13.0.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "semantic-release": "^17.4.2",
@@ -102,5 +105,9 @@
   "peerDependencies": {
     "react": "^16.8 || ^17.0",
     "react-dom": "^16.8 || ^17.0"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=7"
   }
 }

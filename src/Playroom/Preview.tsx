@@ -30,7 +30,7 @@ export default ({ themes, components, FrameComponent }: PreviewProps) => {
       );
 
       return {
-        code: compileJsx(result.code),
+        code: compileJsx(result.code) ?? undefined,
         themeName: result.theme,
       };
     }
