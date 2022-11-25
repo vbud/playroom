@@ -85,7 +85,6 @@
     "webpack-merge": "^5.7.3"
   },
   "devDependencies": {
-    "@octokit/rest": "^18.3.5",
     "@types/babel__standalone": "^7.1.4",
     "@types/jest": "^26.0.20",
     "commitizen": "^4.2.3",

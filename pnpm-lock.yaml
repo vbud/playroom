@@ -7,7 +7,6 @@ specifiers:
   '@babel/preset-react': ^7.12.13
   '@babel/preset-typescript': ^7.13.0
   '@babel/standalone': ^7.13.11
-  '@octokit/rest': ^18.3.5
   '@soda/friendly-errors-webpack-plugin': ^1.8.0
   '@types/babel__standalone': ^7.1.4
   '@types/base64-url': ^2.2.0
@@ -137,7 +136,6 @@ dependencies:
   webpack-merge: 5.8.0
 
 devDependencies:
-  '@octokit/rest': 18.12.0
   '@types/babel__standalone': 7.1.4
   '@types/jest': 26.0.24
   commitizen: 4.2.5
