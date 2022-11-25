@@ -16,11 +16,9 @@
     "build:themed": "./bin/cli.js build --config cypress/projects/themed/playroom.config.js",
     "serve:themed": "PORT=9001 serve --config ../serve.json cypress/projects/themed/dist",
     "build-and-serve:all": "pnpm build:all && pnpm serve:all",
-    "commit": "git-cz",
     "lint": "eslint . && prettier --list-different '**/*.{js,md,ts,tsx}' && tsc --noEmit",
     "format": "prettier --write '**/*.{js,md,ts,tsx}'",
     "test": "jest src",
-    "post-commit-status": "node scripts/postCommitStatus.js",
     "deploy-preview": "surge -p ./cypress/projects/themed/dist"
   },
   "dependencies": {
@@ -84,14 +82,12 @@
   },
   "devDependencies": {
     "@types/babel__standalone": "^7.1.4",
-    "@types/jest": "^26.0.20",
-    "commitizen": "^4.2.3",
+    "@types/jest": "^29.2.3",
     "cypress": "^6.7.1",
-    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.28.0",
     "eslint-config-seek": "^10.1.2",
     "husky": "^8.0.2",
-    "jest": "^26.6.3",
+    "jest": "^29.3.1",
     "lint-staged": "^13.0.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
