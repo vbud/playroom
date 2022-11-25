@@ -66,7 +66,7 @@ specifiers:
   start-server-and-test: ^1.12.0
   typescript: ^4.3.2
   url-join: ^4.0.1
-  use-debounce: ^3.3.0
+  use-debounce: ^8.0.4
   webpack: ^5.26.0
   webpack-dev-server: ^4.2.0
   webpack-merge: ^5.7.3
@@ -125,7 +125,7 @@ dependencies:
   scope-eval: 1.0.0
   typescript: 4.9.3
   url-join: 4.0.1
-  use-debounce: 3.4.3_react@17.0.2
+  use-debounce: 8.0.4_react@17.0.2
   webpack: 5.75.0
   webpack-dev-server: 4.11.1_webpack@5.75.0
   webpack-merge: 5.8.0
@@ -8461,8 +8461,9 @@ packages:
       querystring: 0.2.0
     dev: true
 
-  /use-debounce/3.4.3_react@17.0.2:
-    resolution: {integrity: sha512-nxy+opOxDccWfhMl36J5BSCTpvcj89iaQk2OZWLAtBJQj7ISCtx1gh+rFbdjGfMl6vtCZf6gke/kYvrkVfHMoA==}
+  /use-debounce/8.0.4_react@17.0.2:
+    resolution: {integrity: sha512-fGqsYQzl8kLHF2QpQSgIwgOgJmnh6j5L6SIzQiHdLfwp3q1egUL3btq5Bg2SJysH6A0ILLgT2IqXZKoNJr0nFw==}
+    engines: {node: '>= 10.0.0'}
     peerDependencies:
       react: '>=16.8.0'
     dependencies:

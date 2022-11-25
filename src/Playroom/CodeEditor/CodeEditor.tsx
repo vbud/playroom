@@ -114,7 +114,7 @@ export const CodeEditor = ({ code, onChange, previewCode, hints }: Props) => {
   const [{ cursorPosition, highlightLineNumber }, dispatch] =
     useContext(StoreContext);
 
-  const [debouncedChange] = useDebouncedCallback(
+  const debouncedChange = useDebouncedCallback(
     (newCode: string) => onChange(newCode),
     100
   );
