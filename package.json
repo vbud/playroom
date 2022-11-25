@@ -19,7 +19,6 @@
     "commit": "git-cz",
     "lint": "eslint . && prettier --list-different '**/*.{js,md,ts,tsx}' && tsc --noEmit",
     "format": "prettier --write '**/*.{js,md,ts,tsx}'",
-    "semantic-release": "semantic-release",
     "test": "jest src",
     "post-commit-status": "node scripts/postCommitStatus.js",
     "deploy-preview": "surge -p ./cypress/projects/themed/dist"
@@ -96,7 +95,6 @@
     "lint-staged": "^13.0.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "semantic-release": "^17.4.2",
     "serve": "^14.1.2",
     "start-server-and-test": "^1.12.0"
   },
