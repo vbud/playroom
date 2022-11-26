@@ -21,7 +21,7 @@ import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/brace-fold';
 
-const completeAfter = (cm: Editor, predicate: () => boolean) => {
+const completeAfter = (cm: Editor, predicate?: () => boolean) => {
   const CodeMirror = cm.constructor;
   if (!predicate || predicate()) {
     setTimeout(() => {
