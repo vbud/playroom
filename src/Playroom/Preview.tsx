@@ -1,4 +1,4 @@
-import React, { ComponentType } from 'react';
+import React, { ComponentType, ReactNode } from 'react';
 import lzString from 'lz-string';
 
 import { useParams } from '../utils/params';
@@ -20,7 +20,11 @@ interface PreviewState {
 export interface PreviewProps {
   components: Record<string, ComponentType>;
   themes: Record<string, any>;
-  FrameComponent: ComponentType<{ themeName: string; theme: any }>;
+  FrameComponent: ComponentType<{
+    themeName: string;
+    theme: any;
+    children: ReactNode;
+  }>;
 }
 export default ({ themes, components, FrameComponent }: PreviewProps) => {
   const { themeName, code } = useParams((rawParams): PreviewState => {

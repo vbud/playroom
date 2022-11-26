@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Preview from './Playroom/Preview';
 
 const outlet = document.createElement('div');
@@ -10,13 +10,13 @@ const renderPreview = ({
   components = require('./components'),
   FrameComponent = require('./frameComponent'),
 } = {}) => {
-  render(
+  const root = createRoot(outlet);
+  root.render(
     <Preview
       components={components}
       themes={themes}
       FrameComponent={FrameComponent}
-    />,
-    outlet
+    />
   );
 };
 renderPreview();

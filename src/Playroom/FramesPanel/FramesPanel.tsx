@@ -8,9 +8,12 @@ import { Text } from '../Text/Text';
 
 import * as styles from './FramesPanel.css';
 
+type Width = number;
+type Theme = string;
+
 interface FramesPanelProps {
-  availableWidths: number[];
-  availableThemes: string[];
+  availableWidths: Width[];
+  availableThemes: Theme[];
 }
 
 interface ResetButtonProps {
@@ -43,7 +46,7 @@ interface FrameOptionProps<Option> {
   available: Option[];
   onChange: (options?: Option[]) => void;
 }
-function FrameOption<Option>({
+function FrameOption<Option extends Width | Theme>({
   option,
   selected,
   visible,
@@ -100,7 +103,7 @@ export default ({ availableWidths, availableThemes }: FramesPanelProps) => {
           </FrameHeading>
 
           {availableWidths.map((option) => (
-            <FrameOption
+            <FrameOption<number>
               key={option}
               option={option}
               selected={hasFilteredWidths && visibleWidths.includes(option)}
@@ -130,7 +133,7 @@ export default ({ availableWidths, availableThemes }: FramesPanelProps) => {
             </FrameHeading>
 
             {availableThemes.map((option) => (
-              <FrameOption
+              <FrameOption<string>
                 key={option}
                 option={option}
                 selected={hasFilteredThemes && visibleThemes.includes(option)}

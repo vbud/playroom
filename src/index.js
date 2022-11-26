@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import Playroom from './Playroom/Playroom';
 import { StoreProvider } from './StoreContext/StoreContext';
@@ -28,7 +28,8 @@ polyfillIntersectionObserver().then(() => {
       Object.entries(importedComponents).filter(([_, value]) => value)
     );
 
-    render(
+    const root = createRoot(outlet);
+    root.render(
       <StoreProvider themes={themeNames} widths={widths}>
         <Playroom
           components={components}
@@ -40,8 +41,7 @@ polyfillIntersectionObserver().then(() => {
               : snippets
           }
         />
-      </StoreProvider>,
-      outlet
+      </StoreProvider>
     );
   };
   renderPlayroom();
