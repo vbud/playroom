@@ -15,6 +15,7 @@
     "start:themed": "./bin/cli.js start --config cypress/projects/themed/playroom.config.js",
     "build:themed": "./bin/cli.js build --config cypress/projects/themed/playroom.config.js",
     "serve:themed": "PORT=9001 serve --config ../serve.json cypress/projects/themed/dist",
+    "start:all": "concurrently 'npm:start:basic' 'npm:start:themed'",
     "build-and-serve:all": "pnpm build:all && pnpm serve:all",
     "lint": "eslint . && prettier --list-different '**/*.{js,md,ts,tsx}' && tsc --noEmit",
     "format": "prettier --write '**/*.{js,md,ts,tsx}'",
@@ -81,7 +82,8 @@
   "devDependencies": {
     "@types/babel__standalone": "^7.1.4",
     "@types/jest": "^29.2.3",
-    "cypress": "^6.7.1",
+    "concurrently": "^7.6.0",
+    "cypress": "^11.2.0",
     "eslint": "^8.28.0",
     "eslint-config-seek": "^10.1.2",
     "husky": "^8.0.2",
