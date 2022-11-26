@@ -53,7 +53,7 @@ specifiers:
   portfinder: ^1.0.28
   prettier: ^2.2.1
   prop-types: ^15.7.2
-  query-string: ^6.14.1
+  query-string: ^7.1.1
   re-resizable: ^6.9.0
   react: ^18.2.0
   react-codemirror2: ^7.2.1
@@ -116,7 +116,7 @@ dependencies:
   portfinder: 1.0.32
   prettier: 2.8.0
   prop-types: 15.8.1
-  query-string: 6.14.1
+  query-string: 7.1.1
   re-resizable: 6.9.9_biqbaboplfbrettd7655fr4n2y
   react-codemirror2: 7.2.1_kwvzsiiem4codcn6vkqrderi2q
   react-docgen-typescript: 2.2.2_typescript@4.9.3
@@ -7090,8 +7090,8 @@ packages:
     engines: {node: '>=0.6'}
     dev: true
 
-  /query-string/6.14.1:
-    resolution: {integrity: sha512-XDxAeVmpfu1/6IjyT/gXHOl+S0vQ9owggJ30hhWKdHAsNPOcasn5o9BW0eejZqL2e4vMjhAxoW3jVHcD6mbcYw==}
+  /query-string/7.1.1:
+    resolution: {integrity: sha512-MplouLRDHBZSG9z7fpuAAcI7aAYjDLhtsiVZsevsfaHWDS2IDdORKbSd1kWUA+V4zyva/HZoSfpwnYMMQDhb0w==}
     engines: {node: '>=6'}
     dependencies:
       decode-uri-component: 0.2.0
