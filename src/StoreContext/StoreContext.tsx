@@ -11,12 +11,12 @@ import lzString from 'lz-string';
 import dedent from 'dedent';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { Snippet, compressParams } from '../../utils';
-import { formatForInsertion, formatAndInsert } from '../utils/formatting';
+import { compressParams } from '../../utils';
 import { getParamsFromQuery, updateUrlCode } from '../utils/params';
 import { PlayroomProps } from '../Playroom/Playroom';
 import { isValidLocation } from '../utils/cursor';
 import playroomConfig from '../config';
+import { EditorView } from 'codemirror';
 
 const exampleCode = dedent(playroomConfig.exampleCode || '').trim();
 
@@ -42,11 +42,6 @@ interface DebounceUpdateUrl {
   widths?: number[];
 }
 
-export interface CursorPosition {
-  line: number;
-  ch: number;
-}
-
 interface StatusMessage {
   message: string;
   tone: 'positive' | 'critical';
@@ -54,13 +49,11 @@ interface StatusMessage {
 
 type ToolbarPanel = 'snippets' | 'frames' | 'preview' | 'settings';
 interface State {
+  editorView?: EditorView;
   code: string;
-  previewRenderCode?: string;
-  previewEditorCode?: string;
-  highlightLineNumber?: number;
-  activeToolbarPanel?: ToolbarPanel;
+  cursorPosition: number;
   validCursorPosition: boolean;
-  cursorPosition: CursorPosition;
+  activeToolbarPanel?: ToolbarPanel;
   editorHidden: boolean;
   editorPosition: EditorPosition;
   editorHeight: number;
@@ -74,13 +67,11 @@ interface State {
 
 type Action =
   | { type: 'initialLoad'; payload: Partial<State> }
-  | { type: 'updateCode'; payload: { code: string; cursor?: CursorPosition } }
+  | { type: 'initializeEditor'; payload: { editorView: EditorView } }
   | {
-      type: 'updateCursorPosition';
-      payload: { position: CursorPosition; code?: string };
+      type: 'updateEditorState';
+      payload: { code: string; cursor: number };
     }
-  | { type: 'persistSnippet'; payload: { snippet: Snippet } }
-  | { type: 'previewSnippet'; payload: { snippet: Snippet | null } }
   | { type: 'toggleToolbar'; payload: { panel: ToolbarPanel } }
   | { type: 'closeToolbar' }
   | { type: 'hideEditor' }
@@ -106,13 +97,6 @@ type Action =
   | { type: 'updateVisibleWidths'; payload: { widths: number[] } }
   | { type: 'resetVisibleWidths' };
 
-const resetPreview = ({
-  previewRenderCode,
-  previewEditorCode,
-  highlightLineNumber,
-  ...state
-}: State): State => state;
-
 interface CreateReducerParams {
   themes: PlayroomProps['themes'];
   widths: PlayroomProps['widths'];
@@ -131,15 +115,32 @@ const createReducer =
         };
       }
 
-      case 'updateCode': {
-        const { code, cursor } = action.payload;
-        store.setItem('code', code);
-
+      case 'initializeEditor': {
+        const { editorView } = action.payload;
         return {
           ...state,
-          code,
-          cursorPosition: cursor || state.cursorPosition,
+          editorView,
         };
+      }
+
+      case 'updateEditorState': {
+        const { code, cursor } = action.payload;
+        const newState = { ...state };
+
+        if (code !== state.code) {
+          store.setItem('code', code);
+          newState.code = code;
+        }
+
+        if (cursor !== state.cursorPosition) {
+          newState.cursorPosition = cursor;
+          newState.validCursorPosition = isValidLocation({
+            code: newState.code,
+            cursor,
+          });
+        }
+
+        return newState;
       }
 
       case 'dismissMessage': {
@@ -163,56 +164,6 @@ const createReducer =
                   tone: 'positive',
                 }
               : undefined,
-        };
-      }
-
-      case 'persistSnippet': {
-        const { snippet } = action.payload;
-        const { activeToolbarPanel, ...currentState } = state;
-
-        const { code, cursor } = formatAndInsert({
-          code: state.code,
-          snippet: snippet.code,
-          cursor: state.cursorPosition,
-        });
-
-        return {
-          ...resetPreview(currentState),
-          code,
-          cursorPosition: cursor,
-        };
-      }
-
-      case 'updateCursorPosition': {
-        const { position, code } = action.payload;
-        const newCode = code && code !== state.code ? code : state.code;
-
-        return {
-          ...state,
-          code: newCode,
-          cursorPosition: position,
-          statusMessage: undefined,
-          validCursorPosition: isValidLocation({
-            code: newCode,
-            cursor: position,
-          }),
-        };
-      }
-
-      case 'previewSnippet': {
-        const { snippet } = action.payload;
-
-        const previewRenderCode = snippet
-          ? formatAndInsert({
-              code: state.code,
-              snippet: snippet.code,
-              cursor: state.cursorPosition,
-            }).code
-          : undefined;
-
-        return {
-          ...state,
-          previewRenderCode,
         };
       }
 
@@ -249,34 +200,28 @@ const createReducer =
               };
             }
 
-            const { code, cursor } = formatForInsertion({
-              code: currentState.code,
-              cursor: currentState.cursorPosition,
-            });
-
             return {
               ...currentState,
               statusMessage: undefined,
               activeToolbarPanel: panel,
-              previewEditorCode: code,
-              highlightLineNumber: cursor.line,
             };
           }
 
           return {
-            ...resetPreview(currentState),
+            ...currentState,
             statusMessage: undefined,
             activeToolbarPanel: panel,
           };
         }
 
-        return resetPreview(currentState);
+        return currentState;
       }
 
       case 'closeToolbar': {
-        const { activeToolbarPanel, ...currentState } = state;
-
-        return resetPreview(currentState);
+        return {
+          ...state,
+          activeToolbarPanel: undefined,
+        };
       }
 
       case 'hideEditor': {
@@ -393,7 +338,7 @@ type StoreContextValues = [State, Dispatch<Action>];
 const initialState: State = {
   code: exampleCode,
   validCursorPosition: true,
-  cursorPosition: { line: 0, ch: 0 },
+  cursorPosition: 0,
   editorHidden: false,
   editorPosition: defaultPosition,
   editorHeight: 300,

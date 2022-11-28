@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import classnames from 'classnames';
 import fuzzy from 'fuzzy';
 import { useDebouncedCallback } from 'use-debounce';
@@ -14,7 +14,6 @@ type HighlightIndex = number | null;
 type ReturnedSnippet = Snippet | null;
 interface Props {
   snippets: PlayroomProps['snippets'];
-  onHighlight?: (snippet: ReturnedSnippet) => void;
   onClose?: (snippet: ReturnedSnippet) => void;
 }
 
@@ -75,7 +74,7 @@ const scrollToHighlightedSnippet = (
   }
 };
 
-export default ({ snippets, onHighlight, onClose }: Props) => {
+export default ({ snippets, onClose }: Props) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [highlightedIndex, setHighlightedIndex] =
     useState<HighlightIndex>(null);
@@ -86,14 +85,6 @@ export default ({ snippets, onHighlight, onClose }: Props) => {
       onClose(returnValue);
     }
   };
-  const debouncedPreview = useDebouncedCallback(
-    (previewSnippet: ReturnedSnippet) => {
-      if (typeof onHighlight === 'function') {
-        onHighlight(previewSnippet);
-      }
-    },
-    50
-  );
   const debounceScrollToHighlighted = useDebouncedCallback(
     scrollToHighlightedSnippet,
     50
@@ -102,14 +93,6 @@ export default ({ snippets, onHighlight, onClose }: Props) => {
     () => filterSnippetsForTerm(snippets, searchTerm),
     [searchTerm, snippets]
   );
-
-  useEffect(() => {
-    debouncedPreview(
-      typeof highlightedIndex === 'number'
-        ? filteredSnippets[highlightedIndex]
-        : null
-    );
-  }, [debouncedPreview, filteredSnippets, highlightedIndex]);
 
   return (
     <div className={styles.root} data-testid="snippets">

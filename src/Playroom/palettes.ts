@@ -150,7 +150,7 @@ export const dark = {
     neutral: darkPalette.grey[800],
     surface: darkPalette.grey[900],
     body: darken(0.03, darkPalette.grey[900]),
-    selection: transparentize(0.85, darkPalette.blue[600]),
+    selection: transparentize(0.7, darkPalette.blue[600]),
   },
   border: {
     standard: darkPalette.grey[800],

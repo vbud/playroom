@@ -5,7 +5,9 @@ import { PlayroomProps } from '../Playroom/Playroom';
 
 const staticTypes = __PLAYROOM_GLOBAL__STATIC_TYPES__;
 
-export default (components: PlayroomProps['components']) => {
+export type Hints = Record<string, Record<string, string[]>>;
+
+export default (components: PlayroomProps['components']): Hints => {
   const componentNames = Object.keys(components).sort();
 
   return Object.assign(
@@ -28,21 +30,21 @@ export default (components: PlayroomProps['components']) => {
       const propNames = Object.keys(filteredPropTypes);
 
       return {
-        [componentName]: {
-          attrs: Object.assign(
-            {},
-            ...propNames.map((propName) => {
-              const propType = filteredPropTypes[propName].type;
+        [componentName]: Object.assign(
+          {},
+          ...propNames.map((propName) => {
+            const propType = filteredPropTypes[propName].type;
 
-              return {
-                [propName]:
-                  propType.name === 'oneOf'
-                    ? propType.value.filter((x: any) => typeof x === 'string')
-                    : null,
-              };
-            })
-          ),
-        },
+            return {
+              [propName]:
+                propType.name === 'oneOf'
+                  ? propType.value
+                      .filter((x: any) => typeof x === 'string')
+                      .map((x: string) => `"${x}"`)
+                  : null,
+            };
+          })
+        ),
       };
     })
   );

@@ -61,4 +61,5 @@ export const toolbarContainer = style({
   top: 0,
   bottom: 0,
   left: 0,
+  zIndex: 1,
 });

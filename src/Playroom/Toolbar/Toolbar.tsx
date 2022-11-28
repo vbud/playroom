@@ -15,6 +15,7 @@ import PlayIcon from '../icons/PlayIcon';
 import * as styles from './Toolbar.css';
 import SettingsPanel from '../SettingsPanel/SettingsPanel';
 import SettingsIcon from '../icons/SettingsIcon';
+import { formatAndInsert } from '../../utils/formatting';
 
 interface Props {
   themes: PlayroomProps['themes'];
@@ -32,6 +33,8 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
       activeToolbarPanel,
       validCursorPosition,
       code,
+      cursorPosition,
+      editorView,
     },
     dispatch,
   ] = useContext(StoreContext);
@@ -155,17 +158,21 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
             {isSnippetsOpen && (
               <Snippets
                 snippets={snippets}
-                onHighlight={(snippet) => {
-                  dispatch({
-                    type: 'previewSnippet',
-                    payload: { snippet },
-                  });
-                }}
                 onClose={(snippet) => {
-                  if (snippet) {
-                    dispatch({
-                      type: 'persistSnippet',
-                      payload: { snippet },
+                  if (snippet && editorView) {
+                    const result = formatAndInsert({
+                      code,
+                      cursor: cursorPosition,
+                      snippet: snippet.code,
+                    });
+
+                    editorView.dispatch({
+                      changes: {
+                        from: 0,
+                        to: code.length,
+                        insert: result.code,
+                      },
+                      selection: { anchor: result.cursor },
                     });
                   } else {
                     dispatch({ type: 'closeToolbar' });

@@ -35,8 +35,6 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
       visibleThemes,
       visibleWidths,
       code,
-      previewRenderCode,
-      previewEditorCode,
       ready,
     },
     dispatch,
@@ -74,19 +72,12 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
 
   const codeEditor = (
     <Fragment>
-      <div className={styles.editorContainer}>
-        <CodeEditor
-          code={code}
-          onChange={(newCode: string) =>
-            dispatch({ type: 'updateCode', payload: { code: newCode } })
-          }
-          previewCode={previewEditorCode}
-          hints={hints}
-        />
-        <StatusMessage />
-      </div>
       <div className={styles.toolbarContainer}>
         <Toolbar widths={widths} themes={themes} snippets={snippets} />
+      </div>
+      <div className={styles.editorContainer}>
+        <CodeEditor hints={hints} />
+        <StatusMessage />
       </div>
     </Fragment>
   );
@@ -156,7 +147,7 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
         }
       >
         <Frames
-          code={previewRenderCode || code}
+          code={code}
           themes={
             visibleThemes && visibleThemes.length > 0 ? visibleThemes : themes
           }

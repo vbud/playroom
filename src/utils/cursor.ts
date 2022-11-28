@@ -1,4 +1,3 @@
-import { CursorPosition } from '../StoreContext/StoreContext';
 import { validateCode } from './compileJsx';
 
 const breakoutString = '<b>"b"</b>';
@@ -9,23 +8,16 @@ export const insertAtCursor = ({
   snippet,
 }: {
   code: string;
-  cursor: CursorPosition;
+  cursor: number;
   snippet: string;
-}) => {
-  const { line, ch } = cursor;
-  const testCode = code.split('\n');
-  testCode[line] = `${testCode[line].slice(0, ch)}${snippet}${testCode[
-    line
-  ].slice(ch)}`;
-  return testCode.join('\n');
-};
+}) => `${code.slice(0, cursor)}${snippet}${code.slice(cursor)}`;
 
 export const isValidLocation = ({
   code,
   cursor,
 }: {
   code: string;
-  cursor: CursorPosition;
+  cursor: number;
 }) =>
   code.length === 0
     ? true
@@ -36,3 +28,20 @@ export const isValidLocation = ({
           snippet: breakoutString,
         })
       );
+
+interface CursorPosition {
+  line: number;
+  ch: number;
+}
+export const positionToCursorOffset = (
+  code: string,
+  { line, ch }: CursorPosition
+): number =>
+  code.split('\n').reduce((pos, currLine, index) => {
+    if (index < line) {
+      return pos + currLine.length + 1;
+    } else if (index === line) {
+      return pos + ch;
+    }
+    return pos;
+  }, 0);
