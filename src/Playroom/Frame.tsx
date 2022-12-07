@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { useParams } from '../utils/params';
+import { useParams } from 'src/utils/params';
 // @ts-ignore
 import CatchErrors from './CatchErrors/CatchErrors';
 // @ts-ignore

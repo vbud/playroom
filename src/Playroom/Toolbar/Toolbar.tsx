@@ -2,7 +2,7 @@ import React, { useContext, useState, useCallback } from 'react';
 import { useTimeoutFn } from 'react-use';
 import classnames from 'classnames';
 import { PlayroomProps } from '../Playroom';
-import { StoreContext } from '../../StoreContext/StoreContext';
+import { StoreContext } from 'src/StoreContext/StoreContext';
 import FramesPanel from '../FramesPanel/FramesPanel';
 import PreviewPanel from '../PreviewPanel/PreviewPanel';
 import Snippets from '../Snippets/Snippets';
@@ -15,7 +15,7 @@ import PlayIcon from '../icons/PlayIcon';
 import * as styles from './Toolbar.css';
 import SettingsPanel from '../SettingsPanel/SettingsPanel';
 import SettingsIcon from '../icons/SettingsIcon';
-import { formatAndInsert } from '../../utils/formatting';
+import { formatAndInsert } from 'src/utils/formatting';
 
 interface Props {
   themes: PlayroomProps['themes'];

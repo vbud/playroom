@@ -32,9 +32,9 @@ import { lintKeymap } from '@codemirror/lint';
 import { javascript } from '@codemirror/lang-javascript';
 import { debounce } from 'lodash';
 
-import { StoreContext } from '../../StoreContext/StoreContext';
-import { formatCode } from '../../utils/formatting';
-import { Hints } from '../../utils/componentsToHints';
+import { StoreContext } from 'src/StoreContext/StoreContext';
+import { formatCode } from 'src/utils/formatting';
+import { Hints } from 'src/utils/componentsToHints';
 import { getCompletions } from './completions';
 import {
   errorLineGutterHighlighter,

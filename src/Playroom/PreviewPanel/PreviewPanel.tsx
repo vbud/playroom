@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import usePreviewUrl from '../../utils/usePreviewUrl';
+import usePreviewUrl from 'src/utils/usePreviewUrl';
 import { ThemeSelector } from './ThemeSelector';
 import { CopyButton } from './CopyButton';
 import { Heading } from '../Heading/Heading';

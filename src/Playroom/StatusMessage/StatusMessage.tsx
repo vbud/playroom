@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import classnames from 'classnames';
-import { StoreContext } from '../../StoreContext/StoreContext';
+import { StoreContext } from 'src/StoreContext/StoreContext';
 import { Text } from '../Text/Text';
 import DismissIcon from '../icons/DismissIcon';
 

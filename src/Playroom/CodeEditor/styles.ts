@@ -5,7 +5,7 @@ import { tags as t } from '@lezer/highlight';
 import { StyleSpec } from 'style-mod';
 
 import { colorPaletteVars, vars } from '../theme.css';
-import { compileJsx } from '../../utils/compileJsx';
+import { compileJsx } from 'src/utils/compileJsx';
 
 export const errorClass = 'cm-errorLineGutter';
 

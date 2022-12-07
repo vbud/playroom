@@ -5,10 +5,10 @@ import { Resizable } from 're-resizable';
 import Frames from './Frames/Frames';
 import WindowPortal from './WindowPortal';
 import { Snippets } from '../../utils';
-import componentsToHints from '../utils/componentsToHints';
+import componentsToHints from 'src/utils/componentsToHints';
 import Toolbar, { toolbarItemCount } from './Toolbar/Toolbar';
 import { StatusMessage } from './StatusMessage/StatusMessage';
-import { StoreContext } from '../StoreContext/StoreContext';
+import { StoreContext } from 'src/StoreContext/StoreContext';
 import { CodeEditor } from './CodeEditor/CodeEditor';
 
 import * as styles from './Playroom.css';

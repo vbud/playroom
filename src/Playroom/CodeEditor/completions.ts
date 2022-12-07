@@ -1,7 +1,7 @@
 import { CompletionContext } from '@codemirror/autocomplete';
 import { syntaxTree } from '@codemirror/language';
 import { SyntaxNode } from '@lezer/common';
-import { Hints } from '../../utils/componentsToHints';
+import { Hints } from 'src/utils/componentsToHints';
 
 const validForIdentifier = /^\w*$/;
 const validForAttributeStringValue = /^(\w|")*$/;
@@ -14,7 +14,7 @@ export function getCompletions(hints: Hints) {
         context.pos,
         -1
       );
-      // TODO: remove
+      // Keeping these around, they are helpful for debugging completions.
       // console.log(context.state.doc.lineAt(context.pos).text);
       // console.log('node', node.name, node);
       // console.log('nodeBefore', nodeBefore.name, nodeBefore);
@@ -41,8 +41,6 @@ export function getCompletions(hints: Hints) {
       }
 
       const getComponentName = (elementNode: SyntaxNode) => {
-        // TODO: remove
-        // console.log('getComponentName', elementNode);
         const nameNode = elementNode.getChild('JSXIdentifier');
         return nameNode
           ? context.state.sliceDoc(nameNode.from, nameNode.to)

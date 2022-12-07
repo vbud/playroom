@@ -9,7 +9,12 @@
     "resolveJsonModule": true,
     "noUnusedLocals": true,
     "strict": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"],
+      "utils/*": ["utils/*"]
+    }
   },
   "include": ["lib", "src"]
 }

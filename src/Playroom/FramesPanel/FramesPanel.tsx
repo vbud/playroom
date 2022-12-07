@@ -2,7 +2,7 @@ import React, { useContext, ReactNode } from 'react';
 import Checkmark from './CheckmarkSvg';
 import { Heading } from '../Heading/Heading';
 import { ToolbarPanel } from '../ToolbarPanel/ToolbarPanel';
-import { StoreContext } from '../../StoreContext/StoreContext';
+import { StoreContext } from 'src/StoreContext/StoreContext';
 import { Stack } from '../Stack/Stack';
 import { Text } from '../Text/Text';
 

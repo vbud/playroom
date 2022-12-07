@@ -5,7 +5,7 @@ import {
   ColorScheme,
   EditorPosition,
   StoreContext,
-} from '../../StoreContext/StoreContext';
+} from 'src/StoreContext/StoreContext';
 import { Stack } from '../Stack/Stack';
 import EditorLeftIcon from '../icons/EditorLeftIcon';
 import EditorUndockedIcon from '../icons/EditorUndockedIcon';

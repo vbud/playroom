@@ -1,8 +1,8 @@
 import React, { ComponentType, ReactNode } from 'react';
 import lzString from 'lz-string';
 
-import { useParams } from '../utils/params';
-import { compileJsx } from '../utils/compileJsx';
+import { useParams } from 'src/utils/params';
+import { compileJsx } from 'src/utils/compileJsx';
 import SplashScreen from './SplashScreen/SplashScreen';
 
 import * as styles from './Preview.css';

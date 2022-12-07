@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { useIntersection } from 'react-use';
 
-import playroomConfig from '../../config';
+import playroomConfig from 'src/config';
 
 interface IframeProps extends AllHTMLAttributes<HTMLIFrameElement> {
   src: string;
