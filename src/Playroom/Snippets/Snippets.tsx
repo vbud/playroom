@@ -11,10 +11,10 @@ import { Text } from '../Text/Text';
 import * as styles from './Snippets.css';
 
 type HighlightIndex = number | null;
-type ReturnedSnippet = Snippet | null;
+type ReturnedSnippet = Snippet;
 interface Props {
   snippets: PlayroomProps['snippets'];
-  onClose?: (snippet: ReturnedSnippet) => void;
+  onSelectSnippet: (snippet: ReturnedSnippet) => void;
 }
 
 const getLabel = (snippet: Snippet) => `${snippet.group}\n${snippet.name}`;
@@ -74,17 +74,12 @@ const scrollToHighlightedSnippet = (
   }
 };
 
-export default ({ snippets, onClose }: Props) => {
+export default ({ snippets, onSelectSnippet }: Props) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [highlightedIndex, setHighlightedIndex] =
     useState<HighlightIndex>(null);
   const listEl = useRef<HTMLUListElement | null>(null);
   const highlightedEl = useRef<HTMLLIElement | null>(null);
-  const closeHandler = (returnValue: ReturnedSnippet) => {
-    if (typeof onClose === 'function') {
-      onClose(returnValue);
-    }
-  };
   const debounceScrollToHighlighted = useDebouncedCallback(
     scrollToHighlightedSnippet,
     50
@@ -137,9 +132,7 @@ export default ({ snippets, onClose }: Props) => {
               // reset index when character typed in field
               setHighlightedIndex(0);
             } else if (event.key === 'Enter' && highlightedIndex !== null) {
-              closeHandler(filteredSnippets[highlightedIndex]);
-            } else if (event.key === 'Escape') {
-              closeHandler(null);
+              onSelectSnippet(filteredSnippets[highlightedIndex]);
             }
           }}
           data-testid="filterSnippets"
@@ -163,7 +156,7 @@ export default ({ snippets, onClose }: Props) => {
               onMouseMove={
                 isHighlighted ? undefined : () => setHighlightedIndex(index)
               }
-              onMouseDown={() => closeHandler(filteredSnippets[index])}
+              onMouseDown={() => onSelectSnippet(filteredSnippets[index])}
               title={getLabel(snippet)}
             >
               <span style={{ display: 'block', position: 'relative' }}>

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useCallback } from 'react';
+import React, { useContext, useState, useCallback, useRef } from 'react';
 import { useTimeoutFn } from 'react-use';
 import { PlayroomProps } from '../Playroom';
 import { StoreContext } from 'src/StoreContext/StoreContext';
@@ -15,6 +15,7 @@ import * as styles from './Toolbar.css';
 import SettingsPanel from '../SettingsPanel/SettingsPanel';
 import SettingsIcon from '../icons/SettingsIcon';
 import { formatAndInsert } from 'src/utils/formatting';
+import { useClickOutside } from 'src/utils/useClickOutside';
 
 interface Props {
   themes: PlayroomProps['themes'];
@@ -51,6 +52,12 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
 
     reset();
   }, [cancel, dispatch, isReady, reset]);
+
+  const clickOutsideHandler = () => {
+    dispatch({ type: 'closeToolbar' });
+  };
+  const panelRef = useRef<HTMLDivElement>(null);
+  useClickOutside(panelRef, clickOutsideHandler);
 
   const isSnippetsOpen = activeToolbarPanel === 'snippets';
   const isFramesOpen = activeToolbarPanel === 'frames';
@@ -126,24 +133,24 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
           <ToolbarItem
             active={isSettingsOpen}
             title="Edit settings"
-            onClick={() =>
+            onClick={() => {
               dispatch({
                 type: 'toggleToolbar',
                 payload: { panel: 'settings' },
-              })
-            }
+              });
+            }}
           >
             <SettingsIcon />
           </ToolbarItem>
         </div>
       </div>
       {isOpen && (
-        <div className={styles.panel}>
+        <div ref={panelRef} className={styles.panel}>
           {isSnippetsOpen && (
             <Snippets
               snippets={snippets}
-              onClose={(snippet) => {
-                if (snippet && editorView) {
+              onSelectSnippet={(snippet) => {
+                if (editorView) {
                   const result = formatAndInsert({
                     code,
                     cursor: cursorPosition,
@@ -158,8 +165,6 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
                     },
                     selection: { anchor: result.cursor },
                   });
-                } else {
-                  dispatch({ type: 'closeToolbar' });
                 }
               }}
             />

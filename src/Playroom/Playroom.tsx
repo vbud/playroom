@@ -38,16 +38,16 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
   ] = useContext(StoreContext);
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const keyDownListener = (event: KeyboardEvent) => {
       if (event.code === 'Backslash' && event.metaKey) {
         event.preventDefault();
         dispatch({ type: isChromeHidden ? 'showChrome' : 'hideChrome' });
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', keyDownListener);
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', keyDownListener);
     };
   }, [dispatch, isChromeHidden]);
 
