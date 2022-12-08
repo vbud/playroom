@@ -12,7 +12,6 @@ import DismissIcon from '../icons/DismissIcon';
 
 import * as styles from './StatusMessage.css';
 
-const exitAnimationDuration = 300;
 const statusMessageDuration = 3000;
 
 interface Props {
@@ -29,11 +28,8 @@ export const StatusMessage = ({ dismissable = false }: Props) => {
 
   const closeHandler = useCallback(() => {
     setShow(false);
-
-    cleanupTimerRef.current = setTimeout(() => {
-      setInternalMessage(undefined);
-      dispatch({ type: 'dismissMessage' });
-    }, exitAnimationDuration);
+    setInternalMessage(undefined);
+    dispatch({ type: 'dismissMessage' });
   }, [dispatch]);
 
   useEffect(() => {
@@ -68,11 +64,11 @@ export const StatusMessage = ({ dismissable = false }: Props) => {
       })}
     >
       <Text>{message}</Text>
-      {dismissable ? (
+      {dismissable && (
         <div className={styles.dismiss}>
           <DismissIcon size="100%" />
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

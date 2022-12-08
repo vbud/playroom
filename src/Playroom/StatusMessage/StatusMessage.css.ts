@@ -11,17 +11,16 @@ export const show = style({});
 export const positive = style({});
 export const critical = style({});
 
-const offset = '50%';
 export const status = style({
   position: 'absolute',
-  display: 'flex',
+  display: 'none',
   alignItems: 'center',
   justifyContent: 'center',
   whiteSpace: 'nowrap',
   borderRadius: vars.radii.large,
   padding: `0 ${statusGutter}`,
-  left: offset,
-  transform: `translateX(-${offset})`,
+  left: '50%',
+  transform: `translateX(-50%)`,
   top: calc(vars.grid).multiply(5).toString(),
   height: calc(vars.grid).multiply(8).toString(),
   maxWidth: calc('100vw')
@@ -32,10 +31,8 @@ export const status = style({
     [`&${dismissable}`]: {
       paddingRight: calc(statusGutter).multiply(2).add(icon).toString(),
     },
-    [`&:not(${show})`]: {
-      opacity: 0,
-      pointerEvents: 'none',
-      transform: `translate3d(-${offset}, -10px, 0)`,
+    [`&${show}`]: {
+      display: 'flex',
     },
     [`&${positive}`]: {
       backgroundColor: colorPaletteVars.background.positive,

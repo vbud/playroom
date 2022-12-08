@@ -1,4 +1,4 @@
-import React, { useContext, ComponentType } from 'react';
+import React, { useContext, ComponentType, useEffect } from 'react';
 import classnames from 'classnames';
 import { useDebouncedCallback } from 'use-debounce';
 import { Resizable } from 're-resizable';
@@ -37,6 +37,20 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
     dispatch,
   ] = useContext(StoreContext);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Backslash' && event.metaKey) {
+        event.preventDefault();
+        dispatch({ type: isChromeHidden ? 'showChrome' : 'hideChrome' });
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [dispatch, isChromeHidden]);
+
   const updateEditorWidth = useDebouncedCallback((width: number) => {
     dispatch({
       type: 'updateEditorWidth',
@@ -56,12 +70,7 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
 
   const hints = componentsToHints(components);
 
-  const codeEditor = (
-    <div>
-      <CodeEditor hints={hints} />
-      <StatusMessage />
-    </div>
-  );
+  const codeEditor = <CodeEditor hints={hints} />;
 
   const sizeStyles = {
     height: 'auto',
@@ -105,16 +114,7 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
     );
 
   return (
-    <div
-      className={styles.root}
-      tabIndex={0}
-      onKeyDown={(event: React.KeyboardEvent) => {
-        if (event.code === 'Backslash' && event.metaKey) {
-          event.preventDefault();
-          dispatch({ type: isChromeHidden ? 'showChrome' : 'hideChrome' });
-        }
-      }}
-    >
+    <div className={styles.root}>
       {!isChromeHidden && (
         <Toolbar widths={widths} themes={themes} snippets={snippets} />
       )}
@@ -128,6 +128,7 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
           visibleWidths && visibleWidths.length > 0 ? visibleWidths : widths
         }
       />
+      <StatusMessage />
     </div>
   );
 };
