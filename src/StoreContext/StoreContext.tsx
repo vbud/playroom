@@ -54,9 +54,8 @@ interface State {
   cursorPosition: number;
   validCursorPosition: boolean;
   activeToolbarPanel?: ToolbarPanel;
-  editorHidden: boolean;
+  isChromeHidden: boolean;
   editorPosition: EditorPosition;
-  editorHeight: number;
   editorWidth: number;
   statusMessage?: StatusMessage;
   visibleThemes?: string[];
@@ -74,8 +73,8 @@ type Action =
     }
   | { type: 'toggleToolbar'; payload: { panel: ToolbarPanel } }
   | { type: 'closeToolbar' }
-  | { type: 'hideEditor' }
-  | { type: 'showEditor' }
+  | { type: 'hideChrome' }
+  | { type: 'showChrome' }
   | {
       type: 'copyToClipboard';
       payload: { url: string; trigger: 'toolbarItem' | 'previewPanel' };
@@ -90,8 +89,7 @@ type Action =
       payload: { position: EditorPosition };
     }
   | { type: 'resetEditorPosition' }
-  | { type: 'updateEditorHeight'; payload: { size: number } }
-  | { type: 'updateEditorWidth'; payload: { size: number } }
+  | { type: 'updateEditorWidth'; payload: { editorWidth: number } }
   | { type: 'updateVisibleThemes'; payload: { themes: string[] } }
   | { type: 'resetVisibleThemes' }
   | { type: 'updateVisibleWidths'; payload: { widths: number[] } }
@@ -224,18 +222,18 @@ const createReducer =
         };
       }
 
-      case 'hideEditor': {
+      case 'hideChrome': {
         return {
           ...state,
           activeToolbarPanel: undefined,
-          editorHidden: true,
+          isChromeHidden: true,
         };
       }
 
-      case 'showEditor': {
+      case 'showChrome': {
         return {
           ...state,
-          editorHidden: false,
+          isChromeHidden: false,
         };
       }
 
@@ -268,23 +266,13 @@ const createReducer =
         };
       }
 
-      case 'updateEditorHeight': {
-        const { size } = action.payload;
-        store.setItem('editorHeight', size);
-
-        return {
-          ...state,
-          editorHeight: size,
-        };
-      }
-
       case 'updateEditorWidth': {
-        const { size } = action.payload;
-        store.setItem('editorWidth', size);
+        const { editorWidth } = action.payload;
+        store.setItem('editorWidth', editorWidth);
 
         return {
           ...state,
-          editorWidth: size,
+          editorWidth,
         };
       }
 
@@ -335,14 +323,15 @@ const createReducer =
 
 type StoreContextValues = [State, Dispatch<Action>];
 
+export const initialEditorWidth = 400;
+
 const initialState: State = {
   code: exampleCode,
   validCursorPosition: true,
   cursorPosition: 0,
-  editorHidden: false,
+  isChromeHidden: false,
   editorPosition: defaultPosition,
-  editorHeight: 300,
-  editorWidth: 360,
+  editorWidth: initialEditorWidth,
   ready: false,
   colorScheme: 'system',
 };
@@ -402,7 +391,6 @@ export const StoreProvider = ({
     Promise.all([
       store.getItem<State['code']>('code'),
       store.getItem<State['editorPosition']>('editorPosition'),
-      store.getItem<State['editorHeight']>('editorHeight'),
       store.getItem<State['editorWidth']>('editorWidth'),
       store.getItem<State['visibleWidths']>('visibleWidths'),
       store.getItem<State['visibleThemes']>('visibleThemes'),
@@ -411,7 +399,6 @@ export const StoreProvider = ({
       ([
         storedCode,
         storedPosition,
-        storedHeight,
         storedWidth,
         storedVisibleWidths,
         storedVisibleThemes,
@@ -419,7 +406,6 @@ export const StoreProvider = ({
       ]) => {
         const code = codeFromQuery || storedCode || exampleCode;
         const editorPosition = storedPosition;
-        const editorHeight = storedHeight;
         const editorWidth = storedWidth;
         const visibleWidths = widthsFromQuery || storedVisibleWidths;
         const visibleThemes =
@@ -432,7 +418,6 @@ export const StoreProvider = ({
         /* eslint-disable @typescript-eslint/no-unused-expressions */
         code && (payload.code = code);
         editorPosition && (payload.editorPosition = editorPosition);
-        editorHeight && (payload.editorHeight = editorHeight);
         editorWidth && (payload.editorWidth = editorWidth);
         visibleThemes && (payload.visibleThemes = visibleThemes);
         visibleWidths && (payload.visibleWidths = visibleWidths);

@@ -1,6 +1,5 @@
 import React, { useContext, useState, useCallback } from 'react';
 import { useTimeoutFn } from 'react-use';
-import classnames from 'classnames';
 import { PlayroomProps } from '../Playroom';
 import { StoreContext } from 'src/StoreContext/StoreContext';
 import FramesPanel from '../FramesPanel/FramesPanel';
@@ -22,8 +21,6 @@ interface Props {
   widths: PlayroomProps['widths'];
   snippets: PlayroomProps['snippets'];
 }
-
-export const toolbarItemCount = 5;
 
 export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
   const [
@@ -66,135 +63,121 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
   const isOpen = Boolean(activeToolbarPanel);
 
   return (
-    <div
-      className={classnames(styles.root, {
-        [styles.isOpen]: isOpen,
-      })}
-    >
-      {isOpen && (
-        <div
-          className={styles.backdrop}
-          onClick={() => dispatch({ type: 'closeToolbar' })}
-        />
-      )}
-      <div className={styles.sidebar}>
-        <div className={styles.buttons}>
-          <div>
-            {hasSnippets && (
-              <ToolbarItem
-                active={isSnippetsOpen}
-                title={`Insert snippet (${
-                  navigator.platform.match('Mac') ? '\u2318' : 'Ctrl + '
-                }K)`}
-                disabled={!validCursorPosition}
-                data-testid="toggleSnippets"
-                onClick={() => {
-                  dispatch({
-                    type: 'toggleToolbar',
-                    payload: { panel: 'snippets' },
-                  });
-                }}
-              >
-                <AddIcon />
-              </ToolbarItem>
-            )}
+    <div className={styles.root}>
+      <div className={styles.buttons}>
+        <div>
+          {hasSnippets && (
             <ToolbarItem
-              active={isFramesOpen}
-              showIndicator={hasFilteredFrames}
-              title="Configure visible frames"
+              active={isSnippetsOpen}
+              title={`Insert snippet (${
+                navigator.platform.match('Mac') ? '\u2318' : 'Ctrl + '
+              }K)`}
+              disabled={!validCursorPosition}
+              data-testid="toggleSnippets"
               onClick={() => {
                 dispatch({
                   type: 'toggleToolbar',
-                  payload: { panel: 'frames' },
+                  payload: { panel: 'snippets' },
                 });
               }}
-              data-testid="toggleFrames"
             >
-              <FramesIcon />
+              <AddIcon />
             </ToolbarItem>
-
-            <ToolbarItem
-              active={isPreviewOpen}
-              title="Preview playroom"
-              disabled={code.trim().length === 0}
-              onClick={() => {
-                dispatch({
-                  type: 'toggleToolbar',
-                  payload: { panel: 'preview' },
-                });
-              }}
-              data-testid="togglePreview"
-            >
-              <PlayIcon />
-            </ToolbarItem>
-          </div>
-
-          <div>
-            <ToolbarItem
-              title="Copy link to clipboard"
-              success={copying}
-              onClick={copyHandler}
-              data-testid="copyToClipboard"
-            >
-              <ShareIcon />
-            </ToolbarItem>
-            <ToolbarItem
-              active={isSettingsOpen}
-              title="Edit settings"
-              onClick={() =>
-                dispatch({
-                  type: 'toggleToolbar',
-                  payload: { panel: 'settings' },
-                })
-              }
-            >
-              <SettingsIcon />
-            </ToolbarItem>
-          </div>
+          )}
+          <ToolbarItem
+            active={isFramesOpen}
+            showIndicator={hasFilteredFrames}
+            title="Configure visible frames"
+            onClick={() => {
+              dispatch({
+                type: 'toggleToolbar',
+                payload: { panel: 'frames' },
+              });
+            }}
+            data-testid="toggleFrames"
+          >
+            <FramesIcon />
+          </ToolbarItem>
+          <ToolbarItem
+            active={isPreviewOpen}
+            title="Preview playroom"
+            disabled={code.trim().length === 0}
+            onClick={() => {
+              dispatch({
+                type: 'toggleToolbar',
+                payload: { panel: 'preview' },
+              });
+            }}
+            data-testid="togglePreview"
+          >
+            <PlayIcon />
+          </ToolbarItem>
         </div>
 
-        {isOpen && (
-          <div className={styles.panel}>
-            {isSnippetsOpen && (
-              <Snippets
-                snippets={snippets}
-                onClose={(snippet) => {
-                  if (snippet && editorView) {
-                    const result = formatAndInsert({
-                      code,
-                      cursor: cursorPosition,
-                      snippet: snippet.code,
-                    });
-
-                    editorView.dispatch({
-                      changes: {
-                        from: 0,
-                        to: code.length,
-                        insert: result.code,
-                      },
-                      selection: { anchor: result.cursor },
-                    });
-                  } else {
-                    dispatch({ type: 'closeToolbar' });
-                  }
-                }}
-              />
-            )}
-            {isFramesOpen && (
-              <FramesPanel
-                availableWidths={allWidths}
-                availableThemes={allThemes}
-              />
-            )}
-
-            {isPreviewOpen && (
-              <PreviewPanel themes={allThemes} visibleThemes={visibleThemes} />
-            )}
-
-            {isSettingsOpen && <SettingsPanel />}
-          </div>
-        )}
+        <div>
+          <ToolbarItem
+            title="Copy link to clipboard"
+            success={copying}
+            onClick={copyHandler}
+            data-testid="copyToClipboard"
+          >
+            <ShareIcon />
+          </ToolbarItem>
+          <ToolbarItem
+            active={isSettingsOpen}
+            title="Edit settings"
+            onClick={() =>
+              dispatch({
+                type: 'toggleToolbar',
+                payload: { panel: 'settings' },
+              })
+            }
+          >
+            <SettingsIcon />
+          </ToolbarItem>
+        </div>
       </div>
+      {isOpen && (
+        <div className={styles.panel}>
+          {isSnippetsOpen && (
+            <Snippets
+              snippets={snippets}
+              onClose={(snippet) => {
+                if (snippet && editorView) {
+                  const result = formatAndInsert({
+                    code,
+                    cursor: cursorPosition,
+                    snippet: snippet.code,
+                  });
+
+                  editorView.dispatch({
+                    changes: {
+                      from: 0,
+                      to: code.length,
+                      insert: result.code,
+                    },
+                    selection: { anchor: result.cursor },
+                  });
+                } else {
+                  dispatch({ type: 'closeToolbar' });
+                }
+              }}
+            />
+          )}
+          {isFramesOpen && (
+            <FramesPanel
+              availableWidths={allWidths}
+              availableThemes={allThemes}
+            />
+          )}
+
+          {isPreviewOpen && (
+            <PreviewPanel themes={allThemes} visibleThemes={visibleThemes} />
+          )}
+
+          {isSettingsOpen && <SettingsPanel />}
+        </div>
+      )}
     </div>
   );
 };

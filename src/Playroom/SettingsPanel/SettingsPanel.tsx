@@ -33,7 +33,7 @@ export default ({}: SettingsPanelProps) => {
 
   return (
     <ToolbarPanel data-testid="frame-panel">
-      <Stack space="large" dividers>
+      <Stack space="large">
         <fieldset className={styles.fieldset}>
           <legend>
             <Heading level="3">Editor Position</Heading>

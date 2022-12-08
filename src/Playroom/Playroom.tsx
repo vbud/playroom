@@ -1,4 +1,4 @@
-import React, { useContext, ComponentType, Fragment } from 'react';
+import React, { useContext, ComponentType } from 'react';
 import classnames from 'classnames';
 import { useDebouncedCallback } from 'use-debounce';
 import { Resizable } from 're-resizable';
@@ -6,17 +6,15 @@ import Frames from './Frames/Frames';
 import WindowPortal from './WindowPortal';
 import { Snippets } from '../../utils';
 import componentsToHints from 'src/utils/componentsToHints';
-import Toolbar, { toolbarItemCount } from './Toolbar/Toolbar';
+import Toolbar from './Toolbar/Toolbar';
 import { StatusMessage } from './StatusMessage/StatusMessage';
-import { StoreContext } from 'src/StoreContext/StoreContext';
+import {
+  initialEditorWidth,
+  StoreContext,
+} from 'src/StoreContext/StoreContext';
 import { CodeEditor } from './CodeEditor/CodeEditor';
 
 import * as styles from './Playroom.css';
-import { toolbarOpenSize } from './Toolbar/Toolbar.css';
-import { toolbarItemSize } from './ToolbarItem/ToolbarItem.css';
-
-const MIN_HEIGHT = toolbarItemSize * toolbarItemCount;
-const MIN_WIDTH = toolbarOpenSize + toolbarItemSize + 80;
 
 export interface PlayroomProps {
   components: Record<string, ComponentType>;
@@ -29,9 +27,8 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
   const [
     {
       editorPosition,
-      editorHeight,
       editorWidth,
-      editorHidden,
+      isChromeHidden,
       visibleThemes,
       visibleWidths,
       code,
@@ -40,23 +37,12 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
     dispatch,
   ] = useContext(StoreContext);
 
-  const updateEditorSize = useDebouncedCallback(
-    ({
-      isVerticalEditor,
-      offsetWidth,
-      offsetHeight,
-    }: {
-      isVerticalEditor: boolean;
-      offsetHeight: number;
-      offsetWidth: number;
-    }) => {
-      dispatch({
-        type: isVerticalEditor ? 'updateEditorWidth' : 'updateEditorHeight',
-        payload: { size: isVerticalEditor ? offsetWidth : offsetHeight },
-      });
-    },
-    1
-  );
+  const updateEditorWidth = useDebouncedCallback((width: number) => {
+    dispatch({
+      type: 'updateEditorWidth',
+      payload: { editorWidth: width },
+    });
+  }, 1);
 
   const resetEditorPosition = useDebouncedCallback(() => {
     if (editorPosition === 'undocked') {
@@ -71,20 +57,15 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
   const hints = componentsToHints(components);
 
   const codeEditor = (
-    <Fragment>
-      <div className={styles.toolbarContainer}>
-        <Toolbar widths={widths} themes={themes} snippets={snippets} />
-      </div>
-      <div className={styles.editorContainer}>
-        <CodeEditor hints={hints} />
-        <StatusMessage />
-      </div>
-    </Fragment>
+    <div>
+      <CodeEditor hints={hints} />
+      <StatusMessage />
+    </div>
   );
-  const isVerticalEditor = editorPosition === 'left';
+
   const sizeStyles = {
     height: 'auto',
-    width: isVerticalEditor ? `${editorWidth}px` : 'auto',
+    width: `${editorWidth}px`,
   };
   const editorContainer =
     editorPosition === 'undocked' ? (
@@ -99,15 +80,14 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
     ) : (
       <Resizable
         className={classnames(styles.resizeableContainer, {
-          [styles.resizeableContainer_isLeft]: isVerticalEditor,
-          [styles.resizeableContainer_isHidden]: editorHidden,
+          [styles.resizeableContainer_isHidden]: isChromeHidden,
         })}
         defaultSize={sizeStyles}
         size={sizeStyles}
-        minWidth={isVerticalEditor ? MIN_WIDTH : undefined}
-        minHeight={MIN_HEIGHT}
-        onResize={(_event, _direction, { offsetWidth, offsetHeight }) => {
-          updateEditorSize({ isVerticalEditor, offsetWidth, offsetHeight });
+        minWidth={initialEditorWidth}
+        maxWidth="80vw"
+        onResize={(_event, _direction, { offsetWidth }) => {
+          updateEditorWidth(offsetWidth);
         }}
         enable={{
           top: false,
@@ -127,36 +107,27 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
   return (
     <div
       className={styles.root}
+      tabIndex={0}
       onKeyDown={(event: React.KeyboardEvent) => {
         if (event.code === 'Backslash' && event.metaKey) {
           event.preventDefault();
-          dispatch({ type: editorHidden ? 'showEditor' : 'hideEditor' });
+          dispatch({ type: isChromeHidden ? 'showChrome' : 'hideChrome' });
         }
       }}
     >
-      <div
-        className={styles.previewContainer}
-        style={
-          editorHidden
-            ? undefined
-            : {
-                left: { left: editorWidth },
-                bottom: { bottom: editorHeight },
-                undocked: undefined,
-              }[editorPosition]
-        }
-      >
-        <Frames
-          code={code}
-          themes={
-            visibleThemes && visibleThemes.length > 0 ? visibleThemes : themes
-          }
-          widths={
-            visibleWidths && visibleWidths.length > 0 ? visibleWidths : widths
-          }
-        />
-      </div>
+      {!isChromeHidden && (
+        <Toolbar widths={widths} themes={themes} snippets={snippets} />
+      )}
       {editorContainer}
+      <Frames
+        code={code}
+        themes={
+          visibleThemes && visibleThemes.length > 0 ? visibleThemes : themes
+        }
+        widths={
+          visibleWidths && visibleWidths.length > 0 ? visibleWidths : widths
+        }
+      />
     </div>
   );
 };
