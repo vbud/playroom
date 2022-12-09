@@ -29,7 +29,7 @@ export const select = style({
   inset: 0,
   width: '100%',
   opacity: 0,
-  font: vars.font.family.standard,
+  fontFamily: vars.font.family.standard,
 });
 
 export const focusOverlay = style({

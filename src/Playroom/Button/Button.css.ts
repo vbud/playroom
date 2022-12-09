@@ -32,7 +32,7 @@ export const base = style([
       [highlightColor]: 'currentColor',
     },
     padding: `0 ${vars.space.large}`,
-    font: vars.font.family.standard,
+    font: vars.font.scale.standard,
     borderRadius: vars.radii.large,
     color: highlightColor,
     border: `1px solid ${colorPaletteVars.foreground.neutralSoft}`,
@@ -42,20 +42,6 @@ export const base = style([
         [highlightColor]: colorPaletteVars.foreground.accent,
       },
       borderColor: highlightColor,
-    },
-    ':active': {
-      transform: 'scale(0.98)',
-    },
-    '::after': {
-      content: '',
-      position: 'absolute',
-      transform: 'translateY(-50%)',
-      minHeight: vars.touchableSize,
-      minWidth: vars.touchableSize,
-      left: calc(vars.grid).multiply(2).negate().toString(),
-      right: calc(vars.grid).multiply(2).negate().toString(),
-      height: '100%',
-      top: '50%',
     },
     selectors: {
       [`&:focus:not(:active):not(:hover):not([disabled])`]: {
