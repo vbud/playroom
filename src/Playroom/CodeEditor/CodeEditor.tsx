@@ -42,6 +42,8 @@ import {
   themeExtension,
 } from './styles';
 
+import * as styles from './CodeEditor.css';
+
 export const CodeEditor = ({ hints }: { hints: Hints }) => {
   const [{ code }, dispatch] = useContext(StoreContext);
 
@@ -151,5 +153,5 @@ export const CodeEditor = ({ hints }: { hints: Hints }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={setupEditor} />;
+  return <div className={styles.root} ref={setupEditor} />;
 };

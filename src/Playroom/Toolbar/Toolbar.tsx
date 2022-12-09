@@ -2,12 +2,10 @@ import React, { useContext, useState, useCallback, useRef } from 'react';
 import { useTimeoutFn } from 'react-use';
 import { PlayroomProps } from '../Playroom';
 import { StoreContext } from 'src/StoreContext/StoreContext';
-import FramesPanel from '../FramesPanel/FramesPanel';
 import PreviewPanel from '../PreviewPanel/PreviewPanel';
 import Snippets from '../Snippets/Snippets';
 import ToolbarItem from '../ToolbarItem/ToolbarItem';
 import AddIcon from '../icons/AddIcon';
-import FramesIcon from '../icons/FramesIcon';
 import ShareIcon from '../icons/ShareIcon';
 import PlayIcon from '../icons/PlayIcon';
 
@@ -18,16 +16,12 @@ import { formatAndInsert } from 'src/utils/formatting';
 import { useClickOutside } from 'src/utils/useClickOutside';
 
 interface Props {
-  themes: PlayroomProps['themes'];
-  widths: PlayroomProps['widths'];
   snippets: PlayroomProps['snippets'];
 }
 
-export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
+export default ({ snippets }: Props) => {
   const [
     {
-      visibleThemes = [],
-      visibleWidths = [],
       activeToolbarPanel,
       validCursorPosition,
       code,
@@ -60,13 +54,10 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
   useClickOutside(panelRef, clickOutsideHandler);
 
   const isSnippetsOpen = activeToolbarPanel === 'snippets';
-  const isFramesOpen = activeToolbarPanel === 'frames';
   const isSettingsOpen = activeToolbarPanel === 'settings';
   const isPreviewOpen = activeToolbarPanel === 'preview';
 
   const hasSnippets = snippets && snippets.length > 0;
-  const hasFilteredFrames =
-    visibleThemes.length > 0 || visibleWidths.length > 0;
   const isOpen = Boolean(activeToolbarPanel);
 
   return (
@@ -91,20 +82,6 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
               <AddIcon />
             </ToolbarItem>
           )}
-          <ToolbarItem
-            active={isFramesOpen}
-            showIndicator={hasFilteredFrames}
-            title="Configure visible frames"
-            onClick={() => {
-              dispatch({
-                type: 'toggleToolbar',
-                payload: { panel: 'frames' },
-              });
-            }}
-            data-testid="toggleFrames"
-          >
-            <FramesIcon />
-          </ToolbarItem>
           <ToolbarItem
             active={isPreviewOpen}
             title="Preview playroom"
@@ -169,16 +146,8 @@ export default ({ themes: allThemes, widths: allWidths, snippets }: Props) => {
               }}
             />
           )}
-          {isFramesOpen && (
-            <FramesPanel
-              availableWidths={allWidths}
-              availableThemes={allThemes}
-            />
-          )}
 
-          {isPreviewOpen && (
-            <PreviewPanel themes={allThemes} visibleThemes={visibleThemes} />
-          )}
+          {isPreviewOpen && <PreviewPanel />}
 
           {isSettingsOpen && <SettingsPanel />}
         </div>

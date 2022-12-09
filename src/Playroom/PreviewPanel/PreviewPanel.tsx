@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import usePreviewUrl from 'src/utils/usePreviewUrl';
-import { ThemeSelector } from './ThemeSelector';
 import { CopyButton } from './CopyButton';
 import { Heading } from '../Heading/Heading';
 import { ToolbarPanel } from '../ToolbarPanel/ToolbarPanel';
@@ -10,22 +9,8 @@ import { Inline } from '../Inline/Inline';
 import PlayIcon from '../icons/PlayIcon';
 import { Button } from '../Button/Button';
 
-interface PreviewPanelProps {
-  themes: string[];
-  visibleThemes: string[] | undefined;
-}
-export default ({ themes, visibleThemes }: PreviewPanelProps) => {
-  const defaultTheme =
-    visibleThemes && visibleThemes.length > 0 ? visibleThemes[0] : themes[0];
-  const [userSelectedTheme, setUserSelectedTheme] = useState<
-    string | undefined
-  >();
-
-  const activeTheme = userSelectedTheme || defaultTheme;
-
-  const isThemed = themes.length > 1;
-
-  const prototypeUrl = usePreviewUrl(activeTheme);
+export default () => {
+  const prototypeUrl = usePreviewUrl();
 
   return (
     <ToolbarPanel data-testid="preview-panel">
@@ -33,15 +18,6 @@ export default ({ themes, visibleThemes }: PreviewPanelProps) => {
         <Heading as="h4" level="3">
           Preview
         </Heading>
-
-        {isThemed ? (
-          <ThemeSelector
-            themes={themes}
-            visibleThemes={visibleThemes}
-            activeTheme={activeTheme}
-            onChange={setUserSelectedTheme}
-          />
-        ) : null}
 
         <Inline space="small">
           <Button

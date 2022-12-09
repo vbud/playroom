@@ -20,10 +20,16 @@ export const root = style({
 export const resizeableContainer_isHidden = style({});
 
 export const resizeableContainer = style({
-  // maxWidth: '80vw',
+  display: 'flex',
   selectors: {
     [`&${resizeableContainer_isHidden}`]: {
       display: 'none',
     },
   },
+});
+
+export const toolbarAndEditor = style({
+  display: 'flex',
+  width: '100%',
+  height: '100%',
 });

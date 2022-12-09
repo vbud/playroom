@@ -10,7 +10,6 @@
     "start:basic": "./bin/cli.js start --config configs/basic/playroom.config.js",
     "build:basic": "./bin/cli.js build --config configs/basic/playroom.config.js",
     "serve:basic": "PORT=9000 serve configs/basic/dist",
-    "start:all": "concurrently 'npm:start:basic' 'npm:start:themed'",
     "build-and-serve:all": "pnpm build:all && pnpm serve:all",
     "lint": "eslint . && prettier --list-different '**/*.{js,md,ts,tsx}' && tsc --noEmit",
     "format": "prettier --write '**/*.{js,md,ts,tsx}'",
@@ -87,7 +86,6 @@
   "devDependencies": {
     "@types/babel__standalone": "^7.1.4",
     "@types/jest": "^29.2.3",
-    "concurrently": "^7.6.0",
     "eslint": "^8.28.0",
     "eslint-config-seek": "^10.1.2",
     "husky": "^8.0.2",

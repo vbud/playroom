@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   Dispatch,
 } from 'react';
+import { EditorView } from 'codemirror';
 import copy from 'copy-to-clipboard';
 import localforage from 'localforage';
 import lzString from 'lz-string';
@@ -13,10 +14,9 @@ import { useDebouncedCallback } from 'use-debounce';
 
 import { compressParams } from '../../utils';
 import { getParamsFromQuery, updateUrlCode } from '../utils/params';
-import { PlayroomProps } from '../Playroom/Playroom';
 import { isValidLocation } from '../utils/cursor';
 import playroomConfig from '../config';
-import { EditorView } from 'codemirror';
+import { ColorScheme, useColorScheme } from 'src/utils/colorScheme';
 
 const exampleCode = dedent(playroomConfig.exampleCode || '').trim();
 
@@ -25,21 +25,8 @@ const store = localforage.createInstance({
   version: 1,
 });
 
-export type EditorPosition = 'left' | 'undocked';
-export type ColorScheme = 'light' | 'dark' | 'system';
-
-const defaultPosition: EditorPosition = 'left';
-
-const applyColorScheme = (colorScheme: Exclude<ColorScheme, 'system'>) => {
-  document.documentElement[
-    colorScheme === 'dark' ? 'setAttribute' : 'removeAttribute'
-  ]('data-playroom-dark', '');
-};
-
 interface DebounceUpdateUrl {
   code?: string;
-  themes?: string[];
-  widths?: number[];
 }
 
 interface StatusMessage {
@@ -47,7 +34,7 @@ interface StatusMessage {
   tone: 'positive' | 'critical';
 }
 
-type ToolbarPanel = 'snippets' | 'frames' | 'preview' | 'settings';
+type ToolbarPanel = 'snippets' | 'preview' | 'settings';
 interface State {
   editorView?: EditorView;
   code: string;
@@ -55,11 +42,8 @@ interface State {
   validCursorPosition: boolean;
   activeToolbarPanel?: ToolbarPanel;
   isChromeHidden: boolean;
-  editorPosition: EditorPosition;
   editorWidth: number;
   statusMessage?: StatusMessage;
-  visibleThemes?: string[];
-  visibleWidths?: number[];
   ready: boolean;
   colorScheme: ColorScheme;
 }
@@ -84,26 +68,10 @@ type Action =
       type: 'updateColorScheme';
       payload: { colorScheme: ColorScheme };
     }
-  | {
-      type: 'updateEditorPosition';
-      payload: { position: EditorPosition };
-    }
-  | { type: 'resetEditorPosition' }
-  | { type: 'updateEditorWidth'; payload: { editorWidth: number } }
-  | { type: 'updateVisibleThemes'; payload: { themes: string[] } }
-  | { type: 'resetVisibleThemes' }
-  | { type: 'updateVisibleWidths'; payload: { widths: number[] } }
-  | { type: 'resetVisibleWidths' };
+  | { type: 'updateEditorWidth'; payload: { editorWidth: number } };
 
-interface CreateReducerParams {
-  themes: PlayroomProps['themes'];
-  widths: PlayroomProps['widths'];
-}
 const createReducer =
-  ({
-    themes: configuredThemes,
-    widths: configuredWidths,
-  }: CreateReducerParams) =>
+  () =>
   (state: State, action: Action): State => {
     switch (action.type) {
       case 'initialLoad': {
@@ -247,25 +215,6 @@ const createReducer =
         };
       }
 
-      case 'updateEditorPosition': {
-        const { position } = action.payload;
-        store.setItem('editorPosition', position);
-
-        return {
-          ...state,
-          editorPosition: position,
-        };
-      }
-
-      case 'resetEditorPosition': {
-        store.setItem('editorPosition', defaultPosition);
-
-        return {
-          ...state,
-          editorPosition: defaultPosition,
-        };
-      }
-
       case 'updateEditorWidth': {
         const { editorWidth } = action.payload;
         store.setItem('editorWidth', editorWidth);
@@ -274,46 +223,6 @@ const createReducer =
           ...state,
           editorWidth,
         };
-      }
-
-      case 'updateVisibleThemes': {
-        const { themes } = action.payload;
-        const visibleThemes = configuredThemes.filter((t) =>
-          themes.includes(t)
-        );
-        store.setItem('visibleThemes', visibleThemes);
-
-        return {
-          ...state,
-          visibleThemes,
-        };
-      }
-
-      case 'resetVisibleThemes': {
-        const { visibleThemes, ...restState } = state;
-        store.removeItem('visibleThemes');
-
-        return restState;
-      }
-
-      case 'updateVisibleWidths': {
-        const { widths } = action.payload;
-        const visibleWidths = configuredWidths.filter((w) =>
-          widths.includes(w)
-        );
-        store.setItem('visibleWidths', visibleWidths);
-
-        return {
-          ...state,
-          visibleWidths,
-        };
-      }
-
-      case 'resetVisibleWidths': {
-        const { visibleWidths, ...restState } = state;
-        store.removeItem('visibleWidths');
-
-        return restState;
       }
 
       default:
@@ -330,7 +239,6 @@ const initialState: State = {
   validCursorPosition: true,
   cursorPosition: 0,
   isChromeHidden: false,
-  editorPosition: defaultPosition,
   editorWidth: initialEditorWidth,
   ready: false,
   colorScheme: 'system',
@@ -341,127 +249,59 @@ export const StoreContext = createContext<StoreContextValues>([
   () => {},
 ]);
 
-export const StoreProvider = ({
-  children,
-  themes,
-  widths,
-}: {
-  children: ReactNode;
-  themes: PlayroomProps['themes'];
-  widths: PlayroomProps['widths'];
-}) => {
-  const [state, dispatch] = useReducer(
-    createReducer({ themes, widths }),
-    initialState
-  );
+export const StoreProvider = ({ children }: { children: ReactNode }) => {
+  const [state, dispatch] = useReducer(createReducer(), initialState);
   const debouncedCodeUpdate = useDebouncedCallback(
     (params: DebounceUpdateUrl) => {
-      // Ensure that when removing theme/width preferences
-      // they are also removed from the url. Replacing state
-      // with an empty string (returned from `createUrl`)
-      // does not do anything, so replacing with `#`
       updateUrlCode(compressParams(params));
     },
     500
   );
-  const hasThemesConfigured =
-    (themes || []).filter((themeName) => themeName !== '__PLAYROOM__NO_THEME__')
-      .length > 0;
 
   useEffect(() => {
     const params = getParamsFromQuery();
     let codeFromQuery: State['code'];
-    let themesFromQuery: State['visibleThemes'];
-    let widthsFromQuery: State['visibleWidths'];
 
     if (params.code) {
-      const {
-        code: parsedCode,
-        themes: parsedThemes,
-        widths: parsedWidths,
-      } = JSON.parse(
+      const { code: parsedCode } = JSON.parse(
         lzString.decompressFromEncodedURIComponent(String(params.code)) ?? ''
       );
 
       codeFromQuery = parsedCode;
-      themesFromQuery = parsedThemes;
-      widthsFromQuery = parsedWidths;
     }
 
     Promise.all([
       store.getItem<State['code']>('code'),
-      store.getItem<State['editorPosition']>('editorPosition'),
       store.getItem<State['editorWidth']>('editorWidth'),
-      store.getItem<State['visibleWidths']>('visibleWidths'),
-      store.getItem<State['visibleThemes']>('visibleThemes'),
       store.getItem<State['colorScheme']>('colorScheme'),
-    ]).then(
-      ([
-        storedCode,
-        storedPosition,
-        storedWidth,
-        storedVisibleWidths,
-        storedVisibleThemes,
-        storedColorScheme,
-      ]) => {
-        const code = codeFromQuery || storedCode || exampleCode;
-        const editorPosition = storedPosition;
-        const editorWidth = storedWidth;
-        const visibleWidths = widthsFromQuery || storedVisibleWidths;
-        const visibleThemes =
-          hasThemesConfigured && (themesFromQuery || storedVisibleThemes);
-        const colorScheme = storedColorScheme;
+    ]).then(([storedCode, storedWidth, storedColorScheme]) => {
+      const code = codeFromQuery || storedCode || exampleCode;
+      const editorWidth = storedWidth;
+      const colorScheme = storedColorScheme;
 
-        const payload: Partial<State> = {
-          ready: true,
-        };
-        /* eslint-disable @typescript-eslint/no-unused-expressions */
-        code && (payload.code = code);
-        editorPosition && (payload.editorPosition = editorPosition);
-        editorWidth && (payload.editorWidth = editorWidth);
-        visibleThemes && (payload.visibleThemes = visibleThemes);
-        visibleWidths && (payload.visibleWidths = visibleWidths);
-        colorScheme && (payload.colorScheme = colorScheme);
-        /* eslint-enable */
-
-        dispatch({
-          type: 'initialLoad',
-          payload,
-        });
-      }
-    );
-  }, [hasThemesConfigured]);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-
-    if (state.colorScheme === 'system') {
-      const handler = (e: MediaQueryListEvent) => {
-        applyColorScheme(e.matches ? 'dark' : 'light');
+      const payload: Partial<State> = {
+        ready: true,
       };
-      mq.addEventListener('change', handler);
-      applyColorScheme(mq.matches ? 'dark' : 'light');
+      /* eslint-disable @typescript-eslint/no-unused-expressions */
+      code && (payload.code = code);
+      editorWidth && (payload.editorWidth = editorWidth);
+      colorScheme && (payload.colorScheme = colorScheme);
+      /* eslint-enable */
 
-      return () => {
-        mq.removeEventListener('change', handler);
-      };
-    }
+      dispatch({
+        type: 'initialLoad',
+        payload,
+      });
+    });
+  }, []);
 
-    applyColorScheme(state.colorScheme);
-  }, [state.colorScheme]);
+  useColorScheme(state.colorScheme);
 
   useEffect(() => {
     debouncedCodeUpdate({
       code: state.code,
-      themes: state.visibleThemes,
-      widths: state.visibleWidths,
     });
-  }, [
-    state.code,
-    state.visibleThemes,
-    state.visibleWidths,
-    debouncedCodeUpdate,
-  ]);
+  }, [state.code, debouncedCodeUpdate]);
 
   return (
     <StoreContext.Provider value={[state, dispatch]}>

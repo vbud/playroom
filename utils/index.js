@@ -1,21 +1,18 @@
 const lzString = require('lz-string');
 
-const compressParams = ({ code, themes, widths, theme }) => {
+const compressParams = ({ code }) => {
   const data = JSON.stringify({
     ...(code ? { code } : {}),
-    ...(themes ? { themes } : {}),
-    ...(widths ? { widths } : {}),
-    ...(theme ? { theme } : {}),
   });
 
   return lzString.compressToEncodedURIComponent(data);
 };
 
-const createUrl = ({ baseUrl, code, themes, widths, paramType = 'hash' }) => {
+const createUrl = ({ baseUrl, code, paramType = 'hash' }) => {
   let path = '';
 
-  if (code || themes || widths) {
-    const compressedData = compressParams({ code, themes, widths });
+  if (code) {
+    const compressedData = compressParams({ code });
 
     path = `${paramType === 'hash' ? '#' : ''}?code=${compressedData}`;
   }
@@ -29,11 +26,11 @@ const createUrl = ({ baseUrl, code, themes, widths, paramType = 'hash' }) => {
   return path;
 };
 
-const createPreviewUrl = ({ baseUrl, code, theme, paramType = 'hash' }) => {
+const createPreviewUrl = ({ baseUrl, code, paramType = 'hash' }) => {
   let path = '';
 
-  if (code || theme) {
-    const compressedData = compressParams({ code, theme });
+  if (code) {
+    const compressedData = compressParams({ code });
 
     path = `/preview/${paramType === 'hash' ? '#' : ''}?code=${compressedData}`;
   }

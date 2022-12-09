@@ -5,32 +5,14 @@ import Preview from './Playroom/Preview';
 const outlet = document.createElement('div');
 document.body.appendChild(outlet);
 
-const renderPreview = ({
-  themes = require('./themes'),
-  components = require('./components'),
-  FrameComponent = require('./frameComponent'),
-} = {}) => {
+const renderPreview = ({ components = require('./components') } = {}) => {
   const root = createRoot(outlet);
-  root.render(
-    <Preview
-      components={components}
-      themes={themes}
-      FrameComponent={FrameComponent}
-    />
-  );
+  root.render(<Preview components={components} />);
 };
 renderPreview();
 
 if (module.hot) {
   module.hot.accept('./components', () => {
     renderPreview({ components: require('./components') });
-  });
-
-  module.hot.accept('./themes', () => {
-    renderPreview({ themes: require('./themes') });
-  });
-
-  module.hot.accept('./frameComponent', () => {
-    renderPreview({ FrameComponent: require('./frameComponent') });
   });
 }

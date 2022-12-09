@@ -2,8 +2,7 @@ import React, { useContext, ComponentType, useEffect } from 'react';
 import classnames from 'classnames';
 import { useDebouncedCallback } from 'use-debounce';
 import { Resizable } from 're-resizable';
-import Frames from './Frames/Frames';
-import WindowPortal from './WindowPortal';
+
 import { Snippets } from '../../utils';
 import componentsToHints from 'src/utils/componentsToHints';
 import Toolbar from './Toolbar/Toolbar';
@@ -13,29 +12,18 @@ import {
   StoreContext,
 } from 'src/StoreContext/StoreContext';
 import { CodeEditor } from './CodeEditor/CodeEditor';
+import { Canvas } from './Canvas/Canvas';
 
 import * as styles from './Playroom.css';
 
 export interface PlayroomProps {
   components: Record<string, ComponentType>;
-  themes: string[];
-  widths: number[];
   snippets: Snippets;
 }
 
-export default ({ components, themes, widths, snippets }: PlayroomProps) => {
-  const [
-    {
-      editorPosition,
-      editorWidth,
-      isChromeHidden,
-      visibleThemes,
-      visibleWidths,
-      code,
-      ready,
-    },
-    dispatch,
-  ] = useContext(StoreContext);
+export default ({ components, snippets }: PlayroomProps) => {
+  const [{ editorWidth, isChromeHidden, code, ready }, dispatch] =
+    useContext(StoreContext);
 
   useEffect(() => {
     const keyDownListener = (event: KeyboardEvent) => {
@@ -58,35 +46,26 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
     });
   }, 1);
 
-  const resetEditorPosition = useDebouncedCallback(() => {
-    if (editorPosition === 'undocked') {
-      dispatch({ type: 'resetEditorPosition' });
-    }
-  }, 1);
-
   if (!ready) {
     return null;
   }
 
   const hints = componentsToHints(components);
 
-  const codeEditor = <CodeEditor hints={hints} />;
+  const toolbarAndEditor = (
+    <div className={styles.toolbarAndEditor}>
+      {!isChromeHidden && <Toolbar snippets={snippets} />}
+      <CodeEditor hints={hints} />
+    </div>
+  );
 
   const sizeStyles = {
-    height: 'auto',
+    height: '100%',
     width: `${editorWidth}px`,
   };
-  const editorContainer =
-    editorPosition === 'undocked' ? (
-      <WindowPortal
-        height={window.outerHeight}
-        width={window.outerWidth}
-        onUnload={resetEditorPosition}
-        onError={resetEditorPosition}
-      >
-        {codeEditor}
-      </WindowPortal>
-    ) : (
+
+  return (
+    <div className={styles.root}>
       <Resizable
         className={classnames(styles.resizeableContainer, {
           [styles.resizeableContainer_isHidden]: isChromeHidden,
@@ -109,25 +88,9 @@ export default ({ components, themes, widths, snippets }: PlayroomProps) => {
           topLeft: false,
         }}
       >
-        {codeEditor}
+        {toolbarAndEditor}
       </Resizable>
-    );
-
-  return (
-    <div className={styles.root}>
-      {!isChromeHidden && (
-        <Toolbar widths={widths} themes={themes} snippets={snippets} />
-      )}
-      {editorContainer}
-      <Frames
-        code={code}
-        themes={
-          visibleThemes && visibleThemes.length > 0 ? visibleThemes : themes
-        }
-        widths={
-          visibleWidths && visibleWidths.length > 0 ? visibleWidths : widths
-        }
-      />
+      <Canvas code={code} components={components} />
       <StatusMessage />
     </div>
   );
