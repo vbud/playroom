@@ -7,20 +7,15 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "cypress": "start-server-and-test build-and-serve:all '9000|9001' 'cypress run'",
-    "cypress:dev": "start-server-and-test start:all '9000|9001' 'cypress open'",
-    "start:basic": "./bin/cli.js start --config cypress/projects/basic/playroom.config.js",
-    "build:basic": "./bin/cli.js build --config cypress/projects/basic/playroom.config.js",
-    "serve:basic": "PORT=9000 serve cypress/projects/basic/dist",
-    "start:themed": "./bin/cli.js start --config cypress/projects/themed/playroom.config.js",
-    "build:themed": "./bin/cli.js build --config cypress/projects/themed/playroom.config.js",
-    "serve:themed": "PORT=9001 serve --config ../serve.json cypress/projects/themed/dist",
+    "start:basic": "./bin/cli.js start --config configs/basic/playroom.config.js",
+    "build:basic": "./bin/cli.js build --config configs/basic/playroom.config.js",
+    "serve:basic": "PORT=9000 serve configs/basic/dist",
     "start:all": "concurrently 'npm:start:basic' 'npm:start:themed'",
     "build-and-serve:all": "pnpm build:all && pnpm serve:all",
     "lint": "eslint . && prettier --list-different '**/*.{js,md,ts,tsx}' && tsc --noEmit",
     "format": "prettier --write '**/*.{js,md,ts,tsx}'",
     "test": "jest",
-    "deploy-preview": "surge -p ./cypress/projects/themed/dist"
+    "deploy-preview": "surge -p ./configs/basic/dist"
   },
   "dependencies": {
     "@babel/cli": "^7.13.10",
@@ -93,7 +88,6 @@
     "@types/babel__standalone": "^7.1.4",
     "@types/jest": "^29.2.3",
     "concurrently": "^7.6.0",
-    "cypress": "^11.2.0",
     "eslint": "^8.28.0",
     "eslint-config-seek": "^10.1.2",
     "husky": "^8.0.2",
