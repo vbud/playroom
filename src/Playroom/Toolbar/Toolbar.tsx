@@ -142,6 +142,10 @@ export default ({ snippets }: Props) => {
                     },
                     selection: { anchor: result.cursor },
                   });
+
+                  editorView.focus();
+
+                  dispatch({ type: 'closeToolbar' });
                 }
               }}
             />
