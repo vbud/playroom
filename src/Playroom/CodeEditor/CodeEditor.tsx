@@ -35,7 +35,7 @@ import { debounce } from 'lodash';
 import { StoreContext } from 'src/StoreContext/StoreContext';
 import { formatCode } from 'src/utils/formatting';
 import { compileJsx } from 'src/utils/compileJsx';
-import { positionToCursorOffset } from 'src/utils/cursor';
+import { cursorCoordinatesToCursorPosition } from 'src/utils/cursor';
 import { Hints } from 'src/utils/componentsToHints';
 import { getCompletions } from './completions';
 import { highlightStyle, themeExtension } from './styles';
@@ -62,7 +62,10 @@ const errorLinter = linter((view) => {
     }
 
     if (line && line >= 0 && col && col >= 0) {
-      const cursor = positionToCursorOffset(code, { line: line - 1, col });
+      const cursor = cursorCoordinatesToCursorPosition(code, {
+        line: line - 1,
+        col,
+      });
       diagnostics.push({
         from: cursor,
         to: cursor + 1,

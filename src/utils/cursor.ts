@@ -29,13 +29,13 @@ export const isValidLocation = ({
         })
       );
 
-interface CursorPosition {
+interface CursorCoordinates {
   line: number;
   col: number;
 }
-export const positionToCursorOffset = (
+export const cursorCoordinatesToCursorPosition = (
   code: string,
-  { line, col }: CursorPosition
+  { line, col }: CursorCoordinates
 ): number =>
   code.split('\n').reduce((pos, currLine, index) => {
     if (index < line) {

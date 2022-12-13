@@ -1,6 +1,6 @@
 import dedent from 'dedent';
 
-import { isValidLocation, positionToCursorOffset } from './cursor';
+import { isValidLocation, cursorCoordinatesToCursorPosition } from './cursor';
 
 describe('cursor', () => {
   describe('isValidLocation', () => {
@@ -26,7 +26,10 @@ describe('cursor', () => {
           should: 'start of line after before component is valid',
           input: {
             code,
-            cursor: positionToCursorOffset(code, { line: 1, col: 0 }),
+            cursor: cursorCoordinatesToCursorPosition(code, {
+              line: 1,
+              col: 0,
+            }),
           },
           output: true,
         },
@@ -34,7 +37,10 @@ describe('cursor', () => {
           should: 'end of line after component is valid',
           input: {
             code,
-            cursor: positionToCursorOffset(code, { line: 1, col: 7 }),
+            cursor: cursorCoordinatesToCursorPosition(code, {
+              line: 1,
+              col: 7,
+            }),
           },
           output: true,
         },
@@ -42,7 +48,10 @@ describe('cursor', () => {
           should: 'middle of line inside component is valid',
           input: {
             code,
-            cursor: positionToCursorOffset(code, { line: 3, col: 7 }),
+            cursor: cursorCoordinatesToCursorPosition(code, {
+              line: 3,
+              col: 7,
+            }),
           },
           output: true,
         },
@@ -50,7 +59,10 @@ describe('cursor', () => {
           should: 'middle of line inside tag is not valid',
           input: {
             code,
-            cursor: positionToCursorOffset(code, { line: 3, col: 5 }),
+            cursor: cursorCoordinatesToCursorPosition(code, {
+              line: 3,
+              col: 5,
+            }),
           },
           output: false,
         },
@@ -58,7 +70,10 @@ describe('cursor', () => {
           should: 'start of line inside between attributes is not valid',
           input: {
             code,
-            cursor: positionToCursorOffset(code, { line: 10, col: 0 }),
+            cursor: cursorCoordinatesToCursorPosition(code, {
+              line: 10,
+              col: 0,
+            }),
           },
           output: false,
         },
@@ -80,7 +95,7 @@ describe('position to cursor offset', () => {
       col: 4,
     }; // Before the capital T
 
-    expect(positionToCursorOffset(code, offset)).toEqual(4);
+    expect(cursorCoordinatesToCursorPosition(code, offset)).toEqual(4);
   });
 
   it('should work across multiple lines', () => {
@@ -90,6 +105,6 @@ describe('position to cursor offset', () => {
       col: 4,
     };
 
-    expect(positionToCursorOffset(code, offset)).toEqual(10);
+    expect(cursorCoordinatesToCursorPosition(code, offset)).toEqual(10);
   });
 });
