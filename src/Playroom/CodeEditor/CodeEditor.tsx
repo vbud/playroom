@@ -28,21 +28,52 @@ import {
   closeBrackets,
   closeBracketsKeymap,
 } from '@codemirror/autocomplete';
-import { lintKeymap } from '@codemirror/lint';
+import { Diagnostic, linter, lintKeymap } from '@codemirror/lint';
 import { javascript } from '@codemirror/lang-javascript';
 import { debounce } from 'lodash';
 
 import { StoreContext } from 'src/StoreContext/StoreContext';
 import { formatCode } from 'src/utils/formatting';
+import { compileJsx } from 'src/utils/compileJsx';
+import { positionToCursorOffset } from 'src/utils/cursor';
 import { Hints } from 'src/utils/componentsToHints';
 import { getCompletions } from './completions';
-import {
-  errorLineGutterHighlighter,
-  highlightStyle,
-  themeExtension,
-} from './styles';
+import { highlightStyle, themeExtension } from './styles';
 
 import * as styles from './CodeEditor.css';
+
+const errorLinter = linter((view) => {
+  const diagnostics: Diagnostic[] = [];
+  const code = view.state.doc.toString();
+
+  try {
+    compileJsx(code);
+  } catch (err) {
+    let errorMessage = '';
+    if (err instanceof Error) {
+      errorMessage = err.message;
+    }
+
+    const matches = errorMessage.match(/\(([0-9]+):([0-9]+)\)/);
+    let line, col;
+    if (matches && matches.length === 3) {
+      line = parseInt(matches[1], 10);
+      col = parseInt(matches[2], 10);
+    }
+
+    if (line && line >= 0 && col && col >= 0) {
+      const cursor = positionToCursorOffset(code, { line: line - 1, col });
+      diagnostics.push({
+        from: cursor,
+        to: cursor + 1,
+        severity: 'error',
+        message: errorMessage,
+      });
+    }
+  }
+
+  return diagnostics;
+});
 
 export const CodeEditor = ({ hints }: { hints: Hints }) => {
   const [{ code }, dispatch] = useContext(StoreContext);
@@ -93,7 +124,7 @@ export const CodeEditor = ({ hints }: { hints: Hints }) => {
         javascript({ jsx: true }),
         themeExtension,
         syntaxHighlighting(highlightStyle),
-        errorLineGutterHighlighter,
+        errorLinter,
         updateListener,
         keymap.of([
           ...closeBracketsKeymap,

@@ -1,13 +1,9 @@
-import { EditorView, gutterLineClass, GutterMarker } from '@codemirror/view';
-import { RangeSet } from '@codemirror/state';
+import { EditorView } from '@codemirror/view';
 import { HighlightStyle } from '@codemirror/language';
 import { tags as t } from '@lezer/highlight';
 import { StyleSpec } from 'style-mod';
 
 import { colorPaletteVars, vars } from '../theme.css';
-import { compileJsx } from 'src/utils/compileJsx';
-
-export const errorClass = 'cm-errorLineGutter';
 
 const fontSize = '16px';
 
@@ -43,18 +39,15 @@ const themeOptions: Record<string, StyleSpec> = {
     background: 'none',
     color: colorPaletteVars.foreground.neutral,
   },
-  '.cm-lineNumbers': {
-    '& .cm-gutterElement': {
-      padding: '0 6px',
-    },
-    [`& .${errorClass}`]: {
-      backgroundColor: colorPaletteVars.background.critical,
-      color: colorPaletteVars.foreground.critical,
-      borderRadius: vars.radii.large,
-      '&.cm-activeLineGutter': {
-        color: colorPaletteVars.foreground.neutral,
-      },
-    },
+  '.cm-lineNumbers .cm-gutterElement': {
+    padding: '0 6px',
+  },
+  '.cm-tooltip-lint': {
+    background: colorPaletteVars.background.surface,
+    fontFamily: vars.font.family.code,
+  },
+  '.cm-diagnostic-error': {
+    borderLeftColor: colorPaletteVars.background.critical,
   },
   '.cm-cursor': {
     borderLeftColor: colorPaletteVars.foreground.neutral,
@@ -98,34 +91,3 @@ export const highlightStyle = HighlightStyle.define([
     color: colorPaletteVars.code.attribute,
   },
 ]);
-
-const errorLineGutterMarker = new (class extends GutterMarker {
-  elementClass = errorClass;
-})();
-export const errorLineGutterHighlighter = gutterLineClass.compute(
-  ['doc'],
-  (state) => {
-    const marks = [];
-
-    try {
-      compileJsx(state.doc.toString());
-    } catch (err) {
-      let errorMessage = '';
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      }
-      const matches = errorMessage.match(/\(([0-9]+):/);
-      const lineNumber =
-        matches &&
-        matches.length >= 2 &&
-        matches[1] &&
-        parseInt(matches[1], 10);
-      if (lineNumber) {
-        marks.push(
-          errorLineGutterMarker.range(state.doc.line(lineNumber).from)
-        );
-      }
-    }
-    return RangeSet.of(marks);
-  }
-);

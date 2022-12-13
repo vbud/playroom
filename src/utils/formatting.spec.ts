@@ -17,7 +17,7 @@ describe('formatting code', () => {
     const input = `<div><h1>Title</h1></div>`;
 
     expect(formatCode({ code: input, cursor: 9 })).toEqual({
-      cursor: positionToCursorOffset(output, { line: 1, ch: 6 }),
+      cursor: positionToCursorOffset(output, { line: 1, col: 6 }),
       code: output,
     });
   });
@@ -25,7 +25,7 @@ describe('formatting code', () => {
   it('should handle multiple lines', () => {
     const input = `<div>\n<h1>Title</h1>\n</div>`;
     expect(formatCode({ code: input, cursor: 10 })).toEqual({
-      cursor: positionToCursorOffset(output, { line: 1, ch: 6 }),
+      cursor: positionToCursorOffset(output, { line: 1, col: 6 }),
       code: output,
     });
   });
@@ -50,7 +50,7 @@ describe('format and insert', () => {
         </h1>
       </div>`);
     expect(formatAndInsert({ code: input, cursor: 9, snippet })).toEqual({
-      cursor: positionToCursorOffset(output, { line: 2, ch: 22 }),
+      cursor: positionToCursorOffset(output, { line: 2, col: 22 }),
       code: output,
     });
   });
@@ -73,11 +73,11 @@ describe('format and insert', () => {
     expect(
       formatAndInsert({
         code: input,
-        cursor: positionToCursorOffset(input, { line: 2, ch: 15 }),
+        cursor: positionToCursorOffset(input, { line: 2, col: 15 }),
         snippet,
       })
     ).toEqual({
-      cursor: positionToCursorOffset(output, { line: 6, ch: 13 }),
+      cursor: positionToCursorOffset(output, { line: 6, col: 13 }),
       code: output,
     });
   });

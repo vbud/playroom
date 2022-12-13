@@ -31,17 +31,17 @@ export const isValidLocation = ({
 
 interface CursorPosition {
   line: number;
-  ch: number;
+  col: number;
 }
 export const positionToCursorOffset = (
   code: string,
-  { line, ch }: CursorPosition
+  { line, col }: CursorPosition
 ): number =>
   code.split('\n').reduce((pos, currLine, index) => {
     if (index < line) {
       return pos + currLine.length + 1;
     } else if (index === line) {
-      return pos + ch;
+      return pos + col;
     }
     return pos;
   }, 0);
