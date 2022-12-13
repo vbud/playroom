@@ -3,6 +3,7 @@ import React, { ComponentType, useMemo, useRef } from 'react';
 import { compileJsx } from 'src/utils/compileJsx';
 // @ts-ignore
 import RenderCode from './RenderCode';
+import CatchErrors from './CatchErrors';
 
 import * as styles from './Canvas.css';
 
@@ -24,7 +25,9 @@ export const Canvas = ({ code, components }: CanvasProps) => {
 
   return (
     <div className={styles.root}>
-      <RenderCode code={compiledCode} scope={components} />
+      <CatchErrors code={compiledCode}>
+        <RenderCode code={compiledCode} scope={components} />
+      </CatchErrors>
     </div>
   );
 };
