@@ -72,21 +72,3 @@ export const formatAndInsert = ({
     cursor: cursor + snippet.length,
   });
 };
-
-export const formatForInsertion = ({
-  code,
-  cursor,
-}: CodeWithCursor): CodeWithCursor => {
-  const snippet =
-    '<AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789 />';
-  const { code: formattedCode, cursor: formattedCursor } = formatAndInsert({
-    code,
-    snippet,
-    cursor,
-  });
-
-  return {
-    code: formattedCode.replace(snippet, ''),
-    cursor: formattedCursor,
-  };
-};
