@@ -60,7 +60,7 @@ const errorLinter = linter((view) => {
       col = parseInt(matches[2], 10);
     }
 
-    if (line && line >= 0 && col && col >= 0) {
+    if (line !== undefined && line >= 0 && col !== undefined && col >= 0) {
       const cursor = cursorCoordinatesToCursorPosition(code, {
         line: line - 1,
         col,
