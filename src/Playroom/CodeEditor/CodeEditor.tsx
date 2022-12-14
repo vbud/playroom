@@ -128,13 +128,12 @@ export const CodeEditor = ({ hints }: { hints: Hints }) => {
         errorLinter,
         updateListener,
         keymap.of([
-          ...closeBracketsKeymap,
           ...defaultKeymap,
+          ...closeBracketsKeymap,
           ...searchKeymap,
           ...historyKeymap,
           ...foldKeymap,
           ...lintKeymap,
-          ...defaultKeymap,
           {
             key: 'Mod-s',
             run: (view: EditorView) => {
