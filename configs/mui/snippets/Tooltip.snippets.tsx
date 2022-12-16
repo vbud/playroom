@@ -13,11 +13,4 @@ export const snippets = [
   <Button>Button</Button>
 </Tooltip>`,
   },
-  {
-    name: 'always open',
-    code: `
-<Tooltip title="Always open" open arrow>
-  <Button>Button</Button>
-</Tooltip>`,
-  },
 ];

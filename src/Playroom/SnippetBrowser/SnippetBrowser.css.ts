@@ -4,14 +4,16 @@ import { colorPaletteVars, vars } from '../theme.css';
 
 export const root = style({
   position: 'absolute',
-  left: '10vw',
-  top: '10vh',
+  left: '50%',
+  top: '50%',
+  transform: 'translate(-50%, -50%)',
   zIndex: 1,
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
   height: '80vh',
-  width: '80vw',
+  width: '800px',
+  maxWidth: '80vw',
   backgroundColor: colorPaletteVars.background.surface,
   boxShadow: colorPaletteVars.shadows.small,
   borderRadius: '16px',
@@ -32,23 +34,13 @@ export const snippetsContainer = style({
 });
 
 export const snippet = style({
-  position: 'relative',
+  display: 'flex',
+  justifyContent: 'space-between',
   cursor: 'pointer',
   padding: `${vars.space.large} ${vars.space.xlarge}`,
   color: colorPaletteVars.foreground.neutral,
   backgroundColor: colorPaletteVars.background.surface,
-  '::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: colorPaletteVars.background.selection,
-    borderRadius: vars.radii.medium,
-    opacity: 0,
-    pointerEvents: 'none',
-  },
+  borderRadius: vars.radii.large,
 });
 
 export const snippetName = style({
@@ -57,8 +49,12 @@ export const snippetName = style({
 });
 
 export const highlight = style({
+  backgroundColor: colorPaletteVars.background.selection,
   color: colorPaletteVars.foreground.accent,
-  '::before': {
-    opacity: 1,
-  },
+});
+
+export const snippetBackground = style({
+  background: 'white',
+  padding: vars.space.medium,
+  borderRadius: vars.radii.large,
 });

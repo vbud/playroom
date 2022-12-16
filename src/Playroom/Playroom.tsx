@@ -132,6 +132,7 @@ export default ({ components, snippets }: PlayroomProps) => {
         <SnippetBrowser
           ref={snippetsRef}
           snippets={snippets}
+          components={components}
           onSelectSnippet={(snippet) => {
             if (editorView) {
               dispatch({ type: 'toggleSnippets' });

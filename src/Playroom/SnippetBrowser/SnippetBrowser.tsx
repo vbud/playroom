@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, ComponentType } from 'react';
 import classnames from 'classnames';
 import fuzzy from 'fuzzy';
 import { useDebouncedCallback } from 'use-debounce';
@@ -7,18 +7,20 @@ import { Snippet } from '../../../utils';
 import SearchField from './SearchField/SearchField';
 import { Strong } from '../Strong/Strong';
 import { Text } from '../Text/Text';
+// @ts-ignore
+import RenderCode from '../RenderCode/RenderCode';
 
 import * as styles from './SnippetBrowser.css';
+import { compileJsx } from 'src/utils/compileJsx';
 
 type HighlightIndex = number | null;
 type ReturnedSnippet = Snippet;
 interface Props {
   ref: React.RefObject<HTMLDivElement>;
+  components: Record<string, ComponentType>;
   snippets: PlayroomProps['snippets'];
   onSelectSnippet: (snippet: ReturnedSnippet) => void;
 }
-
-const getLabel = (snippet: Snippet) => `${snippet.group}\n${snippet.name}`;
 
 const filterSnippetsForTerm = (snippets: Props['snippets'], term: string) =>
   term
@@ -76,7 +78,7 @@ const scrollToHighlightedSnippet = (
 };
 
 export default React.forwardRef<HTMLDivElement, Props>(
-  ({ snippets, onSelectSnippet }, ref) => {
+  ({ components, snippets, onSelectSnippet }, ref) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [highlightedIndex, setHighlightedIndex] =
       useState<HighlightIndex>(null);
@@ -150,6 +152,10 @@ export default React.forwardRef<HTMLDivElement, Props>(
         >
           {filteredSnippets.map((snippet, index) => {
             const isHighlighted = highlightedIndex === index;
+            let compiledCode;
+            try {
+              compiledCode = compileJsx(snippet.code) ?? undefined;
+            } catch {}
 
             return (
               <li
@@ -162,14 +168,14 @@ export default React.forwardRef<HTMLDivElement, Props>(
                   isHighlighted ? undefined : () => setHighlightedIndex(index)
                 }
                 onMouseDown={() => onSelectSnippet(filteredSnippets[index])}
-                title={getLabel(snippet)}
               >
-                <span style={{ display: 'block', position: 'relative' }}>
-                  <Text size="large">
-                    <Strong>{snippet.group}</Strong>
-                    <span className={styles.snippetName}>{snippet.name}</span>
-                  </Text>
-                </span>
+                <Text size="large">
+                  <Strong>{snippet.group}</Strong>
+                  <span className={styles.snippetName}>{snippet.name}</span>
+                </Text>
+                <div className={styles.snippetBackground}>
+                  <RenderCode code={compiledCode} scope={components} />
+                </div>
               </li>
             );
           })}
