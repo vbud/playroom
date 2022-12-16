@@ -3,33 +3,23 @@ import { useTimeoutFn } from 'react-use';
 import { PlayroomProps } from '../Playroom';
 import { StoreContext } from 'src/StoreContext/StoreContext';
 import PreviewPanel from '../PreviewPanel/PreviewPanel';
-import Snippets from '../Snippets/Snippets';
 import ToolbarItem from '../ToolbarItem/ToolbarItem';
 import AddIcon from '../icons/AddIcon';
 import ShareIcon from '../icons/ShareIcon';
 import PlayIcon from '../icons/PlayIcon';
-
-import * as styles from './Toolbar.css';
 import SettingsPanel from '../SettingsPanel/SettingsPanel';
 import SettingsIcon from '../icons/SettingsIcon';
-import { formatAndInsert } from 'src/utils/formatting';
 import { useClickOutside } from 'src/utils/useClickOutside';
+
+import * as styles from './Toolbar.css';
 
 interface Props {
   snippets: PlayroomProps['snippets'];
 }
 
 export default ({ snippets }: Props) => {
-  const [
-    {
-      activeToolbarPanel,
-      validCursorPosition,
-      code,
-      cursorPosition,
-      editorView,
-    },
-    dispatch,
-  ] = useContext(StoreContext);
+  const [{ activeToolbarPanel, validCursorPosition, code }, dispatch] =
+    useContext(StoreContext);
   const [copying, setCopying] = useState(false);
   const [isReady, cancel, reset] = useTimeoutFn(() => setCopying(false), 3000);
 
@@ -53,7 +43,6 @@ export default ({ snippets }: Props) => {
   const panelRef = useRef<HTMLDivElement>(null);
   useClickOutside(panelRef, clickOutsideHandler);
 
-  const isSnippetsOpen = activeToolbarPanel === 'snippets';
   const isSettingsOpen = activeToolbarPanel === 'settings';
   const isPreviewOpen = activeToolbarPanel === 'preview';
 
@@ -66,7 +55,6 @@ export default ({ snippets }: Props) => {
         <div>
           {hasSnippets && (
             <ToolbarItem
-              active={isSnippetsOpen}
               title={`Insert snippet (${
                 navigator.platform.match('Mac') ? '\u2318' : 'Ctrl + '
               }K)`}
@@ -74,8 +62,7 @@ export default ({ snippets }: Props) => {
               data-testid="toggleSnippets"
               onClick={() => {
                 dispatch({
-                  type: 'toggleToolbar',
-                  payload: { panel: 'snippets' },
+                  type: 'toggleSnippets',
                 });
               }}
             >
@@ -123,34 +110,6 @@ export default ({ snippets }: Props) => {
       </div>
       {isOpen && (
         <div ref={panelRef} className={styles.panel}>
-          {isSnippetsOpen && (
-            <Snippets
-              snippets={snippets}
-              onSelectSnippet={(snippet) => {
-                if (editorView) {
-                  const result = formatAndInsert({
-                    code,
-                    cursor: cursorPosition,
-                    snippet: snippet.code,
-                  });
-
-                  editorView.dispatch({
-                    changes: {
-                      from: 0,
-                      to: code.length,
-                      insert: result.code,
-                    },
-                    selection: { anchor: result.cursor },
-                  });
-
-                  dispatch({ type: 'closeToolbar' });
-
-                  setTimeout(() => editorView.focus(), 0);
-                }
-              }}
-            />
-          )}
-
           {isPreviewOpen && <PreviewPanel />}
 
           {isSettingsOpen && <SettingsPanel />}

@@ -3,11 +3,18 @@ import { toolbarItemSize } from '../ToolbarItem/ToolbarItem.css';
 import { colorPaletteVars, vars } from '../theme.css';
 
 export const root = style({
+  position: 'absolute',
+  left: '10vw',
+  top: '10vh',
+  zIndex: 1,
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
-  height: '100%',
-  width: '100%',
+  height: '80vh',
+  width: '80vw',
+  backgroundColor: colorPaletteVars.background.surface,
+  boxShadow: colorPaletteVars.shadows.small,
+  borderRadius: '16px',
 });
 
 export const fieldContainer = style({

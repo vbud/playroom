@@ -153,16 +153,6 @@ export const CodeEditor = ({ hints }: { hints: Hints }) => {
               return true;
             },
           },
-          {
-            key: 'Mod-k',
-            run: () => {
-              dispatch({
-                type: 'toggleToolbar',
-                payload: { panel: 'snippets' },
-              });
-              return true;
-            },
-          },
         ]),
       ];
 

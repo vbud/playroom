@@ -34,13 +34,14 @@ interface StatusMessage {
   tone: 'positive' | 'critical';
 }
 
-type ToolbarPanel = 'snippets' | 'preview' | 'settings';
+type ToolbarPanel = 'preview' | 'settings';
 interface State {
   editorView?: EditorView;
   code: string;
   cursorPosition: number;
   validCursorPosition: boolean;
   activeToolbarPanel?: ToolbarPanel;
+  showSnippets: boolean;
   isChromeHidden: boolean;
   editorWidth: number;
   statusMessage?: StatusMessage;
@@ -57,12 +58,14 @@ type Action =
     }
   | { type: 'toggleToolbar'; payload: { panel: ToolbarPanel } }
   | { type: 'closeToolbar' }
+  | { type: 'toggleSnippets' }
   | { type: 'hideChrome' }
   | { type: 'showChrome' }
   | {
       type: 'copyToClipboard';
       payload: { url: string; trigger: 'toolbarItem' | 'previewPanel' };
     }
+  | { type: 'displayStatusMessage'; payload: StatusMessage }
   | { type: 'dismissMessage' }
   | {
       type: 'updateColorScheme';
@@ -109,6 +112,13 @@ const createReducer =
         return newState;
       }
 
+      case 'displayStatusMessage': {
+        return {
+          ...state,
+          statusMessage: action.payload,
+        };
+      }
+
       case 'dismissMessage': {
         return {
           ...state,
@@ -149,30 +159,6 @@ const createReducer =
             };
           }
 
-          if (panel === 'snippets') {
-            const validCursorPosition = isValidLocation({
-              code: currentState.code,
-              cursor: currentState.cursorPosition,
-            });
-
-            if (!validCursorPosition) {
-              return {
-                ...currentState,
-                statusMessage: {
-                  message: "Can't insert snippet at cursor",
-                  tone: 'critical',
-                },
-                validCursorPosition,
-              };
-            }
-
-            return {
-              ...currentState,
-              statusMessage: undefined,
-              activeToolbarPanel: panel,
-            };
-          }
-
           return {
             ...currentState,
             statusMessage: undefined,
@@ -187,6 +173,13 @@ const createReducer =
         return {
           ...state,
           activeToolbarPanel: undefined,
+        };
+      }
+
+      case 'toggleSnippets': {
+        return {
+          ...state,
+          showSnippets: !state.showSnippets,
         };
       }
 
@@ -238,6 +231,7 @@ const initialState: State = {
   code: exampleCode,
   validCursorPosition: true,
   cursorPosition: 0,
+  showSnippets: false,
   isChromeHidden: false,
   editorWidth: initialEditorWidth,
   ready: false,
