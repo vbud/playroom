@@ -31,7 +31,7 @@ export default ({ components, snippets }: PlayroomProps) => {
       editorView,
       editorWidth,
       showSnippets,
-      isChromeHidden,
+      showChrome,
       cursorPosition,
       code,
       ready,
@@ -49,7 +49,7 @@ export default ({ components, snippets }: PlayroomProps) => {
         !event.ctrlKey
       ) {
         event.preventDefault();
-        dispatch({ type: isChromeHidden ? 'showChrome' : 'hideChrome' });
+        dispatch({ type: showChrome ? 'hideChrome' : 'showChrome' });
       } else if (
         event.code === 'KeyK' &&
         event.metaKey &&
@@ -68,7 +68,7 @@ export default ({ components, snippets }: PlayroomProps) => {
     return () => {
       document.removeEventListener('keydown', keyDownListener);
     };
-  }, [dispatch, isChromeHidden]);
+  }, [dispatch, showChrome]);
 
   const updateEditorWidth = useDebouncedCallback((width: number) => {
     dispatch({
@@ -91,7 +91,7 @@ export default ({ components, snippets }: PlayroomProps) => {
 
   const toolbarAndEditor = (
     <div className={styles.toolbarAndEditor}>
-      {!isChromeHidden && <Toolbar snippets={snippets} />}
+      {showChrome && <Toolbar snippets={snippets} />}
       <CodeEditor hints={hints} />
     </div>
   );
@@ -105,7 +105,7 @@ export default ({ components, snippets }: PlayroomProps) => {
     <div className={styles.root}>
       <Resizable
         className={classnames(styles.resizeableContainer, {
-          [styles.resizeableContainer_isHidden]: isChromeHidden,
+          [styles.resizeableContainer_isHidden]: !showChrome,
         })}
         defaultSize={sizeStyles}
         size={sizeStyles}

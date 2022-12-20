@@ -42,7 +42,7 @@ interface State {
   validCursorPosition: boolean;
   activeToolbarPanel?: ToolbarPanel;
   showSnippets: boolean;
-  isChromeHidden: boolean;
+  showChrome: boolean;
   editorWidth: number;
   statusMessage?: StatusMessage;
   ready: boolean;
@@ -187,14 +187,14 @@ const createReducer =
         return {
           ...state,
           activeToolbarPanel: undefined,
-          isChromeHidden: true,
+          showChrome: false,
         };
       }
 
       case 'showChrome': {
         return {
           ...state,
-          isChromeHidden: false,
+          showChrome: true,
         };
       }
 
@@ -232,7 +232,7 @@ const initialState: State = {
   validCursorPosition: true,
   cursorPosition: 0,
   showSnippets: false,
-  isChromeHidden: false,
+  showChrome: true,
   editorWidth: initialEditorWidth,
   ready: false,
   colorScheme: 'system',
