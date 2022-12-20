@@ -1,4 +1,4 @@
-import React, { useContext, ComponentType, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import { useDebouncedCallback } from 'use-debounce';
 import { Resizable } from 're-resizable';
@@ -15,13 +15,13 @@ import SnippetBrowser from './SnippetBrowser/SnippetBrowser';
 import { useClickOutside } from 'src/utils/useClickOutside';
 import { formatAndInsert } from 'src/utils/formatting';
 import { isValidLocation } from 'src/utils/cursor';
-import componentsToHints from 'src/utils/componentsToHints';
+import componentsToHints, { Components } from 'src/utils/componentsToHints';
 import { Snippets } from 'utils';
 
 import * as styles from './Playroom.css';
 
 export interface PlayroomProps {
-  components: Record<string, ComponentType>;
+  components: Components;
   snippets: Snippets;
 }
 

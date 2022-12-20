@@ -1,9 +1,10 @@
-import React, { useState, useMemo, useRef, ComponentType } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import classnames from 'classnames';
 import fuzzy from 'fuzzy';
 import { useDebouncedCallback } from 'use-debounce';
 import { PlayroomProps } from '../Playroom';
-import { Snippet } from '../../../utils';
+import { Snippet } from 'utils';
+import { Components } from 'src/utils/componentsToHints';
 import SearchField from './SearchField/SearchField';
 import { Strong } from '../Strong/Strong';
 import { Text } from '../Text/Text';
@@ -17,7 +18,7 @@ type HighlightIndex = number | null;
 type ReturnedSnippet = Snippet;
 interface Props {
   ref: React.RefObject<HTMLDivElement>;
-  components: Record<string, ComponentType>;
+  components: Components;
   snippets: PlayroomProps['snippets'];
   onSelectSnippet: (snippet: ReturnedSnippet) => void;
 }

@@ -1,11 +1,12 @@
-import React, { ComponentType } from 'react';
+import React from 'react';
 import lzString from 'lz-string';
 
 import { useParams } from 'src/utils/params';
+import { Components } from 'src/utils/componentsToHints';
 import { Canvas } from './Canvas/Canvas';
 
 export interface PreviewProps {
-  components: Record<string, ComponentType>;
+  components: Components;
 }
 export default ({ components }: PreviewProps) => {
   const codeFromUrl = useParams((rawParams): string => {

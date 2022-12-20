@@ -1,13 +1,14 @@
+import { ComponentType } from 'react';
 import omit from 'lodash/omit';
 // @ts-ignore
 import parsePropTypes from 'parse-prop-types';
-import { PlayroomProps } from '../Playroom/Playroom';
 
 const staticTypes = __PLAYROOM_GLOBAL__STATIC_TYPES__;
 
+export type Components = Record<string, ComponentType>;
 export type Hints = Record<string, Record<string, string[]>>;
 
-export default (components: PlayroomProps['components']): Hints => {
+export default (components: Components): Hints => {
   const componentNames = Object.keys(components).sort();
 
   return Object.assign(
