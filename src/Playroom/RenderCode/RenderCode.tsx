@@ -1,20 +1,22 @@
 import React from 'react';
+// @ts-ignore
 import scopeEval from 'scope-eval';
 
 import CatchErrors from './CatchErrors';
 
-// eslint-disable-next-line import/no-unresolved
-import useScope from '__PLAYROOM_ALIAS__USE_SCOPE__';
+interface Props {
+  code: string | undefined;
+  scope: Record<string, any>;
+}
 
-function ScopeEval({ code, scope }) {
+function ScopeEval({ code, scope }: Props) {
   return scopeEval(code, {
-    ...(useScope() ?? {}),
     ...scope,
     React,
   });
 }
 
-export default function RenderCode({ code, scope }) {
+export default function RenderCode({ code, scope }: Props) {
   return (
     <CatchErrors code={code}>
       <ScopeEval code={code} scope={scope} />
