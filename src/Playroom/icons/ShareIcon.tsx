@@ -3,8 +3,7 @@ import React from 'react';
 interface Props {
   size?: number;
 }
-
-export default ({ size = 24 }: Props) => (
+export default ({ size = 20 }: Props) => (
   <svg
     viewBox="0 0 24 24"
     focusable="false"

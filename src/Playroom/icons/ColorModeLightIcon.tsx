@@ -1,13 +1,15 @@
 import React from 'react';
 
-export default () => (
+interface Props {
+  size?: number;
+}
+export default ({ size = 20 }: Props) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
     viewBox="0 0 24 24"
     focusable="false"
     fill="currentColor"
+    width={size}
+    height={size}
   >
     <path d="M12,6c-3.30859,0-6,2.69141-6,6s2.69141,6,6,6,6-2.69141,6-6-2.69141-6-6-6Zm0,10c-2.20605,0-4-1.79395-4-4s1.79395-4,4-4,4,1.79395,4,4-1.79395,4-4,4Z" />
     <path d="M12,4c.55273,0,1-.44727,1-1V1c0-.55273-.44727-1-1-1s-1,.44727-1,1V3c0,.55273,.44727,1,1,1Z" />

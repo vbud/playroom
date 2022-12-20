@@ -3,7 +3,7 @@ import React from 'react';
 interface Props {
   size?: number | string;
 }
-export default ({ size = 24 }: Props) => (
+export default ({ size = 20 }: Props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}

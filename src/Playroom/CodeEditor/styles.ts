@@ -5,7 +5,7 @@ import { StyleSpec } from 'style-mod';
 
 import { colorPaletteVars, vars } from '../theme.css';
 
-const fontSize = '16px';
+const fontSize = '14px';
 
 const themeOptions: Record<string, StyleSpec> = {
   '&': {

@@ -1,7 +1,7 @@
 import { colorPaletteVars, vars } from '../theme.css';
 import { style, globalStyle } from '@vanilla-extract/css';
 
-export const toolbarItemSize = 60;
+export const toolbarItemSize = 50;
 
 export const success = style({});
 export const disabled = style({});
