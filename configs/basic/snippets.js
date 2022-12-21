@@ -1,4 +1,4 @@
-export default [
+const snippets = [
   {
     group: 'Foo',
     name: 'Default',
@@ -35,3 +35,5 @@ export default [
     code: '<Bar color="blue">Blue Bar</Bar>',
   },
 ];
+
+export default snippets;

@@ -3,7 +3,7 @@ import React from 'react';
 interface Props {
   size?: number;
 }
-export default ({ size = 20 }: Props) => (
+const ColorModeLightIcon = ({ size = 20 }: Props) => (
   <svg
     viewBox="0 0 24 24"
     focusable="false"
@@ -22,3 +22,5 @@ export default ({ size = 20 }: Props) => (
     <path d="M18.36035,6.63965c.25586,0,.51172-.09766,.70703-.29297l1.41992-1.41992c.39062-.39062,.39062-1.02344,0-1.41406s-1.02344-.39062-1.41406,0l-1.41992,1.41992c-.39062,.39062-.39062,1.02344,0,1.41406,.19531,.19531,.45117,.29297,.70703,.29297Z" />
   </svg>
 );
+
+export default ColorModeLightIcon;

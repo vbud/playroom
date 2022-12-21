@@ -8,7 +8,7 @@ import { Canvas } from './Canvas/Canvas';
 export interface PreviewProps {
   components: Components;
 }
-export default ({ components }: PreviewProps) => {
+export default function Preview({ components }: PreviewProps) {
   const codeFromUrl = useParams((rawParams): string => {
     if (rawParams.code) {
       const decoded = lzString.decompressFromEncodedURIComponent(
@@ -21,4 +21,4 @@ export default ({ components }: PreviewProps) => {
   });
 
   return <Canvas code={codeFromUrl} components={components} />;
-};
+}

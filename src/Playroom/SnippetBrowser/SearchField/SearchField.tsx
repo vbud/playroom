@@ -13,7 +13,7 @@ interface Props {
   ['data-testid']?: string;
 }
 
-export default ({
+export default function SearchField({
   value,
   placeholder,
   onChange,
@@ -21,17 +21,19 @@ export default ({
   onKeyUp,
   onKeyDown,
   'data-testid': dataTestId,
-}: Props) => (
-  <input
-    type="search"
-    placeholder={placeholder}
-    autoFocus
-    value={value}
-    onChange={onChange}
-    onBlur={onBlur}
-    onKeyUp={onKeyUp}
-    onKeyDown={onKeyDown}
-    className={styles.field}
-    data-testid={dataTestId}
-  />
-);
+}: Props) {
+  return (
+    <input
+      type="search"
+      placeholder={placeholder}
+      autoFocus
+      value={value}
+      onChange={onChange}
+      onBlur={onBlur}
+      onKeyUp={onKeyUp}
+      onKeyDown={onKeyDown}
+      className={styles.field}
+      data-testid={dataTestId}
+    />
+  );
+}

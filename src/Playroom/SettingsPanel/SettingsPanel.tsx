@@ -17,9 +17,7 @@ const colorModeIcon: Record<ColorScheme, ReactChild> = {
   system: <ColorModeSystemIcon />,
 };
 
-interface SettingsPanelProps {}
-
-export default ({}: SettingsPanelProps) => {
+export default function SettingsPanel() {
   const [{ colorScheme }, dispatch] = useContext(StoreContext);
 
   return (
@@ -65,4 +63,4 @@ export default ({}: SettingsPanelProps) => {
       </Stack>
     </ToolbarPanel>
   );
-};
+}

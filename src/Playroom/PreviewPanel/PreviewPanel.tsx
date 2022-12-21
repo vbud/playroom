@@ -9,7 +9,7 @@ import { Inline } from '../Inline/Inline';
 import PlayIcon from '../icons/PlayIcon';
 import { Button } from '../Button/Button';
 
-export default () => {
+export default function PreviewPanel() {
   const prototypeUrl = usePreviewUrl();
 
   return (
@@ -39,4 +39,4 @@ export default () => {
       </Stack>
     </ToolbarPanel>
   );
-};
+}

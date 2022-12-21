@@ -8,7 +8,7 @@ const baseUrl = window.location.href
   .split(playroomConfig.paramType === 'hash' ? '#' : '?')[0]
   .split('index.html')[0];
 
-export default () => {
+export default function usePreviewUrl() {
   const [{ code }] = useContext(StoreContext);
 
   return createPreviewUrl({
@@ -16,4 +16,4 @@ export default () => {
     code,
     paramType: playroomConfig.paramType,
   });
-};
+}

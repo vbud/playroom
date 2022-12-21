@@ -3,7 +3,7 @@ import React from 'react';
 interface Props {
   size?: number;
 }
-export default ({ size = 20 }: Props) => (
+const SettingsIcon = ({ size = 20 }: Props) => (
   <svg
     viewBox="0 0 24 24"
     focusable="false"
@@ -15,3 +15,5 @@ export default ({ size = 20 }: Props) => (
     <path d="M12 8c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.7-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.8 2-2 2z" />
   </svg>
 );
+
+export default SettingsIcon;

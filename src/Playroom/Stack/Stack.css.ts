@@ -6,7 +6,7 @@ const size = createVar();
 
 export const gap = style({
   selectors: {
-    ['&:not(:last-child)']: {
+    '&:not(:last-child)': {
       paddingBottom: size,
     },
   },

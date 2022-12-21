@@ -15,7 +15,7 @@ interface Props {
   ['data-testid']?: string;
 }
 
-export default ({
+export default function ToolbarItem({
   children,
   title,
   active = false,
@@ -23,35 +23,37 @@ export default ({
   showIndicator = false,
   success = false,
   onClick,
-  ['data-testid']: dataTestId,
-}: Props) => (
-  <button
-    data-testid={dataTestId}
-    className={classnames(styles.button, {
-      [styles.button_isActive]: active,
-      [styles.showIndicator]: showIndicator,
-      [styles.disabled]: disabled,
-      [styles.success]: success,
-    })}
-    disabled={disabled}
-    title={title}
-    onClick={(event) => {
-      event.stopPropagation();
-      onClick();
-    }}
-  >
-    <span style={{ display: 'block', position: 'relative' }}>{children}</span>
-    <span
-      className={classnames(styles.indicator, {
-        [styles.show]: showIndicator && !success,
+  'data-testid': dataTestId,
+}: Props) {
+  return (
+    <button
+      data-testid={dataTestId}
+      className={classnames(styles.button, {
+        [styles.button_isActive]: active,
+        [styles.showIndicator]: showIndicator,
+        [styles.disabled]: disabled,
+        [styles.success]: success,
       })}
-    />
-    <span
-      className={classnames(styles.successIndicator, {
-        [styles.show]: success,
-      })}
+      disabled={disabled}
+      title={title}
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick();
+      }}
     >
-      <TickIcon size={12} />
-    </span>
-  </button>
-);
+      <span style={{ display: 'block', position: 'relative' }}>{children}</span>
+      <span
+        className={classnames(styles.indicator, {
+          [styles.show]: showIndicator && !success,
+        })}
+      />
+      <span
+        className={classnames(styles.successIndicator, {
+          [styles.show]: success,
+        })}
+      >
+        <TickIcon size={12} />
+      </span>
+    </button>
+  );
+}

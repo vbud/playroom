@@ -135,7 +135,7 @@ export default React.forwardRef<HTMLDivElement, Props>(
                 !event.ctrlKey &&
                 !event.metaKey &&
                 !event.altKey &&
-                /^[a-z0-9!"#$%&'()*+,.\/:;<=>?@\[\] ^_`{|}~-]$/i.test(event.key)
+                /^[a-z0-9!"#$%&'()*+,./:;<=>?@[\] ^_`{|}~-]$/i.test(event.key)
               ) {
                 // reset index when character typed in field
                 setHighlightedIndex(0);

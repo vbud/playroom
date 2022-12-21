@@ -8,7 +8,7 @@ const staticTypes = __PLAYROOM_GLOBAL__STATIC_TYPES__;
 export type Components = Record<string, ComponentType>;
 export type Hints = Record<string, Record<string, string[]>>;
 
-export default (components: Components): Hints => {
+export default function componentsToHints(components: Components): Hints {
   const componentNames = Object.keys(components).sort();
 
   return Object.assign(
@@ -49,4 +49,4 @@ export default (components: Components): Hints => {
       };
     })
   );
-};
+}

@@ -3,7 +3,7 @@ import React from 'react';
 interface Props {
   size?: number;
 }
-export default ({ size = 20 }: Props) => (
+const ShareIcon = ({ size = 20 }: Props) => (
   <svg
     viewBox="0 0 24 24"
     focusable="false"
@@ -47,3 +47,5 @@ export default ({ size = 20 }: Props) => (
     />
   </svg>
 );
+
+export default ShareIcon;

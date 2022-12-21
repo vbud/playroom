@@ -6,7 +6,7 @@ const findUp = require('find-up');
 const lib = require('../lib');
 
 const showUsage = () => {
-  console.log(
+  console.info(
     commandLineUsage([
       {
         header: 'playroom',

@@ -25,7 +25,7 @@ export interface PlayroomProps {
   snippets: Snippets;
 }
 
-export default ({ components, snippets }: PlayroomProps) => {
+export default function Playroom({ components, snippets }: PlayroomProps) {
   const [
     {
       editorView,
@@ -176,4 +176,4 @@ export default ({ components, snippets }: PlayroomProps) => {
       <StatusMessage />
     </div>
   );
-};
+}

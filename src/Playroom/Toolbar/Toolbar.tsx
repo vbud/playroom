@@ -17,7 +17,7 @@ interface Props {
   snippets: PlayroomProps['snippets'];
 }
 
-export default ({ snippets }: Props) => {
+export default function Toolbar({ snippets }: Props) {
   const [{ activeToolbarPanel, validCursorPosition, code }, dispatch] =
     useContext(StoreContext);
   const [copying, setCopying] = useState(false);
@@ -117,4 +117,4 @@ export default ({ snippets }: Props) => {
       )}
     </div>
   );
-};
+}
