@@ -2,7 +2,6 @@ import React, { useMemo, useRef } from 'react';
 
 import { compileJsx } from 'src/utils/compileJsx';
 import { Components } from 'src/utils/componentsToHints';
-// @ts-ignore
 import RenderCode from '../RenderCode/RenderCode';
 
 import * as styles from './Canvas.css';

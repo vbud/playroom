@@ -8,7 +8,6 @@ import { Components } from 'src/utils/componentsToHints';
 import SearchField from './SearchField/SearchField';
 import { Strong } from '../Strong/Strong';
 import { Text } from '../Text/Text';
-// @ts-ignore
 import RenderCode from '../RenderCode/RenderCode';
 
 import * as styles from './SnippetBrowser.css';

@@ -1,6 +1,5 @@
 import React from 'react';
-// @ts-ignore
-import scopeEval from 'scope-eval';
+import evalCode from 'src/utils/evalCode';
 
 import CatchErrors from './CatchErrors';
 
@@ -9,8 +8,8 @@ interface Props {
   scope: Record<string, any>;
 }
 
-function ScopeEval({ code, scope }: Props) {
-  return scopeEval(code, {
+function Eval({ code, scope }: Props) {
+  return evalCode(code, {
     ...scope,
     React,
   });
@@ -19,7 +18,7 @@ function ScopeEval({ code, scope }: Props) {
 export default function RenderCode({ code, scope }: Props) {
   return (
     <CatchErrors code={code}>
-      <ScopeEval code={code} scope={scope} />
+      <Eval code={code} scope={scope} />
     </CatchErrors>
   );
 }
