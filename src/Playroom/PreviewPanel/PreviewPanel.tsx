@@ -1,6 +1,5 @@
 import React from 'react';
 
-import usePreviewUrl from 'src/utils/usePreviewUrl';
 import { CopyButton } from './CopyButton';
 import { Heading } from '../Heading/Heading';
 import { ToolbarPanel } from '../ToolbarPanel/ToolbarPanel';
@@ -8,15 +7,47 @@ import { Stack } from '../Stack/Stack';
 import { Inline } from '../Inline/Inline';
 import PlayIcon from '../icons/PlayIcon';
 import { Button } from '../Button/Button';
+import playroomConfig from 'src/config';
+import { FrameId } from 'src/StoreContext/StoreContext';
 
-export default function PreviewPanel() {
-  const prototypeUrl = usePreviewUrl();
+export type ParamType = 'hash' | 'search';
+
+const baseUrl = window.location.href
+  .split(playroomConfig.paramType === 'hash' ? '#' : '?')[0]
+  .split('index.html')[0];
+
+const createPreviewUrl = ({
+  baseUrl,
+  frameId,
+  paramType = 'hash',
+}: {
+  baseUrl: string;
+  frameId: FrameId;
+  paramType?: ParamType;
+}) => {
+  const path = `/preview/${paramType === 'hash' ? '#' : ''}?frame=${frameId}`;
+
+  const trimmedBaseUrl = baseUrl.replace(/\/$/, '');
+
+  return `${trimmedBaseUrl}${path}`;
+};
+
+export default function PreviewPanel({
+  selectedFrameId,
+}: {
+  selectedFrameId: FrameId;
+}) {
+  const prototypeUrl = createPreviewUrl({
+    baseUrl,
+    frameId: selectedFrameId,
+    paramType: playroomConfig.paramType,
+  });
 
   return (
     <ToolbarPanel data-testid="preview-panel">
       <Stack space="medium">
         <Heading as="h4" level="3">
-          Preview
+          Preview selected frame
         </Heading>
 
         <Inline space="small">
@@ -24,16 +55,16 @@ export default function PreviewPanel() {
             as="a"
             href={prototypeUrl}
             target="_blank"
-            title="Open preview in new window"
+            title="Open frame preview in new window"
             rel="noopener noreferrer"
             data-testid="view-prototype"
-            icon={<PlayIcon size={20} />}
+            icon={<PlayIcon />}
           >
             Open
           </Button>
           <CopyButton
             copyContent={prototypeUrl}
-            title="Copy preview link to clipboard"
+            title="Copy frame preview link to clipboard"
           />
         </Inline>
       </Stack>

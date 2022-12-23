@@ -19,6 +19,7 @@ import componentsToHints, { Components } from 'src/utils/componentsToHints';
 import { Snippets } from 'utils';
 
 import * as styles from './Playroom.css';
+import { Text } from './Text/Text';
 
 export interface PlayroomProps {
   components: Components;
@@ -26,18 +27,17 @@ export interface PlayroomProps {
 }
 
 export default function Playroom({ components, snippets }: PlayroomProps) {
-  const [
-    {
-      editorView,
-      editorWidth,
-      showSnippets,
-      showChrome,
-      cursorPosition,
-      code,
-      ready,
-    },
-    dispatch,
-  ] = useContext(StoreContext);
+  const [state, dispatch] = useContext(StoreContext);
+  const {
+    editorView,
+    editorWidth,
+    showSnippets,
+    showChrome,
+    cursorPosition,
+    selectedFrameId,
+    frames,
+    ready,
+  } = state;
 
   useEffect(() => {
     const keyDownListener = (event: KeyboardEvent) => {
@@ -89,10 +89,15 @@ export default function Playroom({ components, snippets }: PlayroomProps) {
 
   const hints = componentsToHints(components);
 
-  const toolbarAndEditor = (
-    <div className={styles.toolbarAndEditor}>
-      {showChrome && <Toolbar snippets={snippets} />}
-      <CodeEditor hints={hints} />
+  const editor = (
+    <div className={styles.editorContainer}>
+      {selectedFrameId ? (
+        <CodeEditor code={frames[selectedFrameId].code} hints={hints} />
+      ) : (
+        <div className={styles.emptyCodeEditor}>
+          <Text>No frame selected.</Text>
+        </div>
+      )}
     </div>
   );
 
@@ -103,31 +108,38 @@ export default function Playroom({ components, snippets }: PlayroomProps) {
 
   return (
     <div className={styles.root}>
-      <Resizable
-        className={classnames(styles.resizeableContainer, {
-          [styles.resizeableContainer_isHidden]: !showChrome,
-        })}
-        defaultSize={sizeStyles}
-        size={sizeStyles}
-        minWidth={initialEditorWidth}
-        maxWidth="80vw"
-        onResize={(_event, _direction, { offsetWidth }) => {
-          updateEditorWidth(offsetWidth);
-        }}
-        enable={{
-          top: false,
-          right: true,
-          bottom: false,
-          left: false,
-          topRight: false,
-          bottomRight: false,
-          bottomLeft: false,
-          topLeft: false,
-        }}
-      >
-        {toolbarAndEditor}
-      </Resizable>
-      <Canvas code={code} components={components} />
+      {showChrome && <Toolbar snippets={snippets} />}
+      <div className={styles.main}>
+        <Resizable
+          className={classnames(styles.resizeableContainer, {
+            [styles.resizeableContainer_isHidden]: !showChrome,
+          })}
+          defaultSize={sizeStyles}
+          size={sizeStyles}
+          minWidth={initialEditorWidth}
+          maxWidth="80vw"
+          onResize={(_event, _direction, { offsetWidth }) => {
+            updateEditorWidth(offsetWidth);
+          }}
+          enable={{
+            top: false,
+            right: true,
+            bottom: false,
+            left: false,
+            topRight: false,
+            bottomRight: false,
+            bottomLeft: false,
+            topLeft: false,
+          }}
+        >
+          {editor}
+        </Resizable>
+        <Canvas
+          frames={frames}
+          components={components}
+          selectedFrameId={selectedFrameId}
+        />
+      </div>
       {showSnippets && (
         <SnippetBrowser
           ref={snippetsRef}
@@ -139,6 +151,18 @@ export default function Playroom({ components, snippets }: PlayroomProps) {
 
               setTimeout(() => editorView.focus(), 0);
 
+              if (!selectedFrameId) {
+                dispatch({
+                  type: 'displayStatusMessage',
+                  payload: {
+                    message: 'Select a frame before adding a snippet',
+                    tone: 'critical',
+                  },
+                });
+                return;
+              }
+
+              const code = frames[selectedFrameId].code;
               const validCursorPosition = isValidLocation({
                 code,
                 cursor: cursorPosition,
@@ -148,7 +172,7 @@ export default function Playroom({ components, snippets }: PlayroomProps) {
                 dispatch({
                   type: 'displayStatusMessage',
                   payload: {
-                    message: "Can't insert snippet at cursor",
+                    message: 'Cannot insert snippet at cursor',
                     tone: 'critical',
                   },
                 });

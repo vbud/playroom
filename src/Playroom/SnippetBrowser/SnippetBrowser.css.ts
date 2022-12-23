@@ -1,5 +1,4 @@
 import { style } from '@vanilla-extract/css';
-import { toolbarItemSize } from '../ToolbarItem/ToolbarItem.css';
 import { colorPaletteVars, vars } from '../theme.css';
 
 export const root = style({
@@ -23,7 +22,6 @@ export const fieldContainer = style({
   display: 'flex',
   alignItems: 'center',
   padding: vars.space.medium,
-  flexBasis: toolbarItemSize,
   borderBottom: `1px solid ${colorPaletteVars.border.standard}`,
 });
 

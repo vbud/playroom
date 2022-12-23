@@ -25,12 +25,18 @@ export const Button = ({
   children,
   icon,
   tone,
+  className,
   ...props
 }: Props) => (
   <ButtonComponent
-    className={classnames(styles.reset, styles.base, {
-      [styles.positive]: tone === 'positive',
-    })}
+    className={classnames(
+      styles.reset,
+      styles.base,
+      {
+        [styles.positive]: tone === 'positive',
+      },
+      className
+    )}
     disabled={tone === 'positive'}
     {...props}
   >

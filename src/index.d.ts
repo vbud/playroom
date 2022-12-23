@@ -3,7 +3,6 @@ interface PlayroomConfig {
   outputPath: string;
   title?: string;
   snippets?: Snippet[];
-  exampleCode?: string;
   cwd?: string;
   storageKey?: string;
   webpackConfig?: () => void;

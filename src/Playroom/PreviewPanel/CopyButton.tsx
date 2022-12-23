@@ -39,7 +39,7 @@ export const CopyButton = ({ copyContent, title }: CopyButtonProps) => {
       data-testid="copy-to-clipboard"
       title={title}
       tone={copying ? 'positive' : undefined}
-      icon={copying ? <TickIcon size={18} /> : <ShareIcon size={18} />}
+      icon={copying ? <TickIcon /> : <ShareIcon />}
     >
       {copying ? 'Copied ' : 'Copy link '}
     </Button>

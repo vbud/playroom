@@ -1,9 +1,10 @@
 import React from 'react';
+import { defaultIconSize } from './iconConfig';
 
 interface Props {
   size?: number;
 }
-const ColorModeDarkIcon = ({ size = 20 }: Props) => (
+const ColorModeDarkIcon = ({ size = defaultIconSize }: Props) => (
   <svg
     viewBox="0 0 24 24"
     focusable="false"

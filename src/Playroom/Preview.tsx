@@ -1,24 +1,37 @@
-import React from 'react';
-import lzString from 'lz-string';
+import React, { useEffect, useState } from 'react';
 
 import { useParams } from 'src/utils/params';
 import { Components } from 'src/utils/componentsToHints';
-import { Canvas } from './Canvas/Canvas';
+import { FrameConfigs, State, store } from 'src/StoreContext/StoreContext';
+import { Frame } from './Frame/Frame';
+
+import './Preview.css';
 
 export interface PreviewProps {
   components: Components;
 }
 export default function Preview({ components }: PreviewProps) {
-  const codeFromUrl = useParams((rawParams): string => {
-    if (rawParams.code) {
-      const decoded = lzString.decompressFromEncodedURIComponent(
-        String(rawParams.code)
-      );
-      return decoded ? JSON.parse(decoded).code : '';
+  const [frames, setFrames] = useState<FrameConfigs | null>(null);
+
+  useEffect(() => {
+    store
+      .getItem<State['frames']>('frames')
+      .then((result) => setFrames(result));
+  }, []);
+
+  const frameIdFromUrl = useParams((params): string => {
+    if (typeof params.frame === 'string') {
+      return params.frame;
     }
 
     return '';
   });
 
-  return <Canvas code={codeFromUrl} components={components} />;
+  if (frameIdFromUrl.length > 0 && frames !== null) {
+    return (
+      <Frame frameConfig={frames[frameIdFromUrl]} components={components} />
+    );
+  } else {
+    return 'Cannot render frame.';
+  }
 }

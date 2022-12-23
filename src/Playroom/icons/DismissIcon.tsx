@@ -1,9 +1,10 @@
 import React from 'react';
+import { defaultIconSize } from './iconConfig';
 
 interface Props {
   size?: number | string;
 }
-const DismissIcon = ({ size = 20 }: Props) => (
+const DismissIcon = ({ size = defaultIconSize }: Props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}

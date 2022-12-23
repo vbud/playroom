@@ -77,8 +77,8 @@ const errorLinter = linter((view) => {
   return diagnostics;
 });
 
-export const CodeEditor = ({ hints }: { hints: Hints }) => {
-  const [{ code }, dispatch] = useContext(StoreContext);
+export const CodeEditor = ({ code, hints }: { code: string; hints: Hints }) => {
+  const [_, dispatch] = useContext(StoreContext);
 
   const setupEditor = useCallback((node: HTMLDivElement) => {
     if (node) {
@@ -169,6 +169,11 @@ export const CodeEditor = ({ hints }: { hints: Hints }) => {
             parent: node,
           }),
         },
+      });
+    } else {
+      // cleanup
+      dispatch({
+        type: 'destroyEditor',
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

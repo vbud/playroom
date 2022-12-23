@@ -1,7 +1,6 @@
 import { calc } from '@vanilla-extract/css-utils';
 import { style } from '@vanilla-extract/css';
 import { colorPaletteVars, vars } from '../theme.css';
-import { toolbarItemSize } from '../ToolbarItem/ToolbarItem.css';
 
 const statusGutter = '15px';
 const icon = '16px';
@@ -23,10 +22,7 @@ export const status = style({
   transform: `translateX(-50%)`,
   top: calc(vars.grid).multiply(5).toString(),
   height: calc(vars.grid).multiply(8).toString(),
-  maxWidth: calc('100vw')
-    .subtract(`${toolbarItemSize}px`)
-    .subtract(calc(vars.codeGutterSize).multiply(2))
-    .toString(),
+  maxWidth: 300,
   selectors: {
     [`&${dismissable}`]: {
       paddingRight: calc(statusGutter).multiply(2).add(icon).toString(),

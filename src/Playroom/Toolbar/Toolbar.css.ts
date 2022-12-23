@@ -1,36 +1,34 @@
 import { style } from '@vanilla-extract/css';
 import { colorPaletteVars } from '../theme.css';
-import { toolbarItemSize } from '../ToolbarItem/ToolbarItem.css';
+import { toolbarItemHeight } from './ToolbarItem/ToolbarItem.css';
 
 const toolbarBorderThickness = 1;
 
 export const root = style({
-  height: '100%',
-  position: 'relative',
-  color: colorPaletteVars.foreground.neutral,
-});
-
-export const buttons = style({
-  height: '100%',
+  width: '100%',
+  height: toolbarItemHeight,
   display: 'flex',
-  flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'space-between',
-  width: toolbarItemSize,
+  color: colorPaletteVars.foreground.neutral,
   backgroundColor: colorPaletteVars.background.surface,
-  borderRight: `${toolbarBorderThickness}px solid ${colorPaletteVars.border.standard}`,
+  borderBottom: `${toolbarBorderThickness}px solid ${colorPaletteVars.border.standard}`,
 });
 
+export const alignNextItemsRight = style({
+  marginLeft: 'auto',
+});
+
+export const toolbarHeight = toolbarItemHeight + toolbarBorderThickness;
 export const panel = style({
   position: 'absolute',
-  top: 0,
-  left: toolbarItemSize + toolbarBorderThickness,
+  top: toolbarHeight,
+  right: 0,
   zIndex: 1,
   display: 'flex',
   overflow: 'auto',
   pointerEvents: 'auto',
   width: 300,
-  height: '100%',
+  height: `calc(100vh - ${toolbarHeight}px)`,
   backgroundColor: colorPaletteVars.background.surface,
-  borderRight: `${toolbarBorderThickness}px solid ${colorPaletteVars.border.standard}`,
+  borderBottom: `${toolbarBorderThickness}px solid ${colorPaletteVars.border.standard}`,
 });

@@ -1,9 +1,10 @@
 import React from 'react';
+import { defaultIconSize } from './iconConfig';
 
 interface Props {
   size?: number;
 }
-const AddIcon = ({ size = 20 }: Props) => (
+const AddIcon = ({ size = defaultIconSize }: Props) => (
   <svg
     viewBox="0 0 24 24"
     focusable="false"

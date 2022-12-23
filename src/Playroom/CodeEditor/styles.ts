@@ -9,7 +9,6 @@ const fontSize = '14px';
 
 const themeOptions: Record<string, StyleSpec> = {
   '&': {
-    backgroundColor: colorPaletteVars.background.surface,
     color: colorPaletteVars.foreground.neutral,
     height: '100%',
     width: '100%',

@@ -1,9 +1,10 @@
 import React from 'react';
+import { defaultIconSize } from './iconConfig';
 
-interface TickIconProps {
+interface Props {
   size?: number;
 }
-const TickIcon = ({ size = 20 }: TickIconProps) => (
+const TickIcon = ({ size = defaultIconSize }: Props) => (
   <svg
     viewBox="0 0 24 24"
     focusable="false"

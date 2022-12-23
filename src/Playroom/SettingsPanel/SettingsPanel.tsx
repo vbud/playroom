@@ -1,4 +1,4 @@
-import React, { useContext, ReactChild } from 'react';
+import React, { useContext, ReactElement } from 'react';
 import { Heading } from '../Heading/Heading';
 import { ToolbarPanel } from '../ToolbarPanel/ToolbarPanel';
 import { StoreContext } from 'src/StoreContext/StoreContext';
@@ -11,7 +11,7 @@ import ColorModeDarkIcon from '../icons/ColorModeDarkIcon';
 
 import * as styles from './SettingsPanel.css';
 
-const colorModeIcon: Record<ColorScheme, ReactChild> = {
+const colorModeIcon: Record<ColorScheme, ReactElement> = {
   light: <ColorModeLightIcon />,
   dark: <ColorModeDarkIcon />,
   system: <ColorModeSystemIcon />,
