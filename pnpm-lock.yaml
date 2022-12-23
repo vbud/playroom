@@ -70,6 +70,7 @@ specifiers:
   react-docgen-typescript: ^2.1.0
   react-dom: ^18.2.0
   react-use: ^17.2.1
+  react-zoomable-ui: ^0.10.1
   read-pkg-up: ^7.0.1
   serve: ^14.1.2
   start-server-and-test: ^1.15.2
@@ -142,6 +143,7 @@ dependencies:
   re-resizable: 6.9.9_biqbaboplfbrettd7655fr4n2y
   react-docgen-typescript: 2.2.2_typescript@4.9.4
   react-use: 17.4.0_biqbaboplfbrettd7655fr4n2y
+  react-zoomable-ui: 0.10.1_react@18.2.0
   read-pkg-up: 7.0.1
   style-mod: 4.0.0
   typescript: 4.9.4
@@ -5030,6 +5032,11 @@ packages:
     resolution: {integrity: sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==}
     dev: true
 
+  /hammerjs/2.0.8:
+    resolution: {integrity: sha512-tSQXBXS/MWQOn/RKckawJ61vvsDpCom87JgxiYdGwHdOa0ht0vzUWDlfioofFCRU0L+6NGDt6XzbgoJvZkMeRQ==}
+    engines: {node: '>=0.8.0'}
+    dev: false
+
   /handle-thing/2.0.1:
     resolution: {integrity: sha512-9Qn4yBxelxoh2Ow62nP+Ka/kMnOXRi8BXnRaUwezLNhqelnN49xKz4F/dPP8OYLxLxq6JDtZb2i9XznUQbNPTg==}
     dev: false
@@ -7087,6 +7094,16 @@ packages:
       tslib: 2.4.1
     dev: false
 
+  /react-zoomable-ui/0.10.1_react@18.2.0:
+    resolution: {integrity: sha512-UiQBKm9y/+c+cCjeA7SU7Wy8m+iexrqx+MxOh1PrjxXQP7WwSiBYSWQ0hUOWJ93lo7BXvtZHkRvzfq76OGk72g==}
+    peerDependencies:
+      react: '*'
+    dependencies:
+      hammerjs: 2.0.8
+      react: 18.2.0
+      ts-invariant: 0.10.3
+    dev: false
+
   /react/18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
     engines: {node: '>=0.10.0'}
@@ -8011,6 +8028,13 @@ packages:
 
   /ts-easing/0.2.0:
     resolution: {integrity: sha512-Z86EW+fFFh/IFB1fqQ3/+7Zpf9t2ebOAxNI/V6Wo7r5gqiqtxmgTlQ1qbqQcjLKYeSHPTsEmvlJUDg/EuL0uHQ==}
+    dev: false
+
+  /ts-invariant/0.10.3:
+    resolution: {integrity: sha512-uivwYcQaxAucv1CzRp2n/QdYPo4ILf9VXgH19zEIjFx2EJufV16P0JtJVpYHy89DItG6Kwj2oIUjrcK5au+4tQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      tslib: 2.4.1
     dev: false
 
   /tsconfig-paths-webpack-plugin/4.0.0:

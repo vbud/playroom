@@ -1,8 +1,8 @@
-import React, { useMemo, useRef } from 'react';
+import React from 'react';
+import { Space } from 'react-zoomable-ui';
 
-import { compileJsx } from 'src/utils/compileJsx';
 import { Components } from 'src/utils/componentsToHints';
-import RenderCode from '../RenderCode/RenderCode';
+import { Frame } from './Frame/Frame';
 
 import * as styles from './Canvas.css';
 
@@ -11,20 +11,11 @@ export interface CanvasProps {
   components: Components;
 }
 export const Canvas = ({ code, components }: CanvasProps) => {
-  const lastValidCompiledRef = useRef<string | undefined>();
-  const compiledCode = useMemo(() => {
-    try {
-      const compiled = compileJsx(code) ?? undefined;
-      lastValidCompiledRef.current = compiled;
-      return compiled;
-    } catch {
-      return lastValidCompiledRef.current;
-    }
-  }, [code]);
-
   return (
     <div className={styles.root}>
-      <RenderCode code={compiledCode} scope={components} />
+      <Space>
+        <Frame code={code} components={components} />
+      </Space>
     </div>
   );
 };
