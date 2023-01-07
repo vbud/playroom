@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useRef } from 'react';
 import classNames from 'classnames';
 import { NoPanArea, ViewPortCameraInterface } from 'react-zoomable-ui';
 import { Rnd } from 'react-rnd';
@@ -55,30 +55,12 @@ export const CanvasFrame = ({
   canvasViewportCamera,
 }: CanvasFrameProps) => {
   const [_, dispatch] = useContext(StoreContext);
-  const [canvasClientRect, setCanvasClientRect] = useState<DOMRect | null>(
-    null
-  );
 
-  const [moveInterval, setMoveInterval] = useState<MoveInterval | null>(null);
-  const moveMultiplier = 4;
-  const startMoving = (direction: MoveInterval['direction']) => {
-    const [x, y] = directionToDeltas[direction];
-    setMoveInterval({
-      direction,
-      interval: setInterval(
-        () =>
-          canvasViewportCamera &&
-          canvasViewportCamera.moveBy(x * moveMultiplier, y * moveMultiplier),
-        1
-      ),
-    });
-  };
-  const stopMoving = () => {
-    if (moveInterval) {
-      clearInterval(moveInterval.interval);
-      setMoveInterval(null);
-    }
-  };
+  const dragStartPosition = React.useRef({ x: 0, y: 0 });
+  const canvasClientRect = useRef<DOMRect | null>(null);
+  const moveInterval = useRef<MoveInterval | null>(null);
+
+  const { id, x, y, width, height } = frameConfig;
 
   const focusIfSelected = useCallback((node: Rnd) => {
     if (node && id === selectedFrameId) {
@@ -87,69 +69,99 @@ export const CanvasFrame = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { id, x, y, width, height } = frameConfig;
+  const moveMultiplier = 4;
+  const startMoving = (direction: MoveInterval['direction']) => {
+    const [x, y] = directionToDeltas[direction];
+    moveInterval.current = {
+      direction,
+      interval: setInterval(
+        () =>
+          canvasViewportCamera &&
+          canvasViewportCamera.moveBy(x * moveMultiplier, y * moveMultiplier),
+        1
+      ),
+    };
+  };
+  const stopMoving = () => {
+    if (moveInterval.current) {
+      clearInterval(moveInterval.current.interval);
+      moveInterval.current = null;
+    }
+  };
+
+  const panIfDraggingOutsideCanvas = (mouseX: number, mouseY: number) => {
+    if (!canvasClientRect.current) return;
+
+    const { left, top, right, bottom } = canvasClientRect.current;
+
+    let direction: MoveInterval['direction'] | undefined;
+
+    if (mouseX < left && mouseY < top) {
+      direction = 'leftUp';
+    } else if (mouseX > right && mouseY < top) {
+      direction = 'rightUp';
+    } else if (mouseX > right && mouseY > bottom) {
+      direction = 'rightDown';
+    } else if (mouseX < left && mouseY > bottom) {
+      direction = 'leftDown';
+    } else if (mouseY < top) {
+      direction = 'up';
+    } else if (mouseX > right) {
+      direction = 'right';
+    } else if (mouseY > bottom) {
+      direction = 'down';
+    } else if (mouseX < left) {
+      direction = 'left';
+    }
+
+    // if previously moving in different direction, stop previous movement
+    if (direction === undefined) {
+      // if mouse is dragging inside bounds, cancel any existing movement
+      stopMoving();
+    } else if (moveInterval.current === null) {
+      // if mouse is dragging outside of bounds and we are not currently moving, start moving
+      startMoving(direction);
+      // if mouse is dragging outside of bounds and we are currently moving in a different direction,
+      // stop moving in that direction and start moving in the new direction
+    } else if (
+      moveInterval.current &&
+      moveInterval.current.direction !== direction
+    ) {
+      stopMoving();
+      startMoving(direction);
+    }
+  };
 
   return (
-    <NoPanArea>
+    <NoPanArea style={{ transform: `translate(${x}px,${y}px)` }}>
       <Rnd
         ref={focusIfSelected}
         className={classNames(styles.root, {
           [styles.selected]: id === selectedFrameId,
         })}
         size={{ width, height }}
-        position={{ x, y }}
+        position={{ x: 0, y: 0 }}
         scale={scale}
-        onDragStart={() => {
-          canvasEl && setCanvasClientRect(canvasEl.getBoundingClientRect());
+        onDragStart={(_event, d) => {
+          dragStartPosition.current = {
+            x: d.x,
+            y: d.y,
+          };
+          canvasEl &&
+            (canvasClientRect.current = canvasEl.getBoundingClientRect());
         }}
         onDrag={(event) => {
-          if (!canvasClientRect) return;
-
-          const { left, top, right, bottom } = canvasClientRect;
           const { clientX, clientY } = event as MouseEvent;
-
-          let direction: MoveInterval['direction'] | undefined;
-
-          if (clientX < left && clientY < top) {
-            direction = 'leftUp';
-          } else if (clientX > right && clientY < top) {
-            direction = 'rightUp';
-          } else if (clientX > right && clientY > bottom) {
-            direction = 'rightDown';
-          } else if (clientX < left && clientY > bottom) {
-            direction = 'leftDown';
-          } else if (clientY < top) {
-            direction = 'up';
-          } else if (clientX > right) {
-            direction = 'right';
-          } else if (clientY > bottom) {
-            direction = 'down';
-          } else if (clientX < left) {
-            direction = 'left';
-          }
-
-          // if previously moving in different direction, stop previous movement
-          if (direction === undefined) {
-            // if mouse is dragging inside bounds, cancel any existing movement
-            stopMoving();
-          } else if (moveInterval === null) {
-            // if mouse is dragging outside of bounds and we are not currently moving, start moving
-            startMoving(direction);
-            // if mouse is dragging outside of bounds and we are currently moving in a different direction,
-            // stop moving in that direction and start moving in the new direction
-          } else if (moveInterval && moveInterval.direction !== direction) {
-            stopMoving();
-            startMoving(direction);
-          }
+          panIfDraggingOutsideCanvas(clientX, clientY);
         }}
-        onDragStop={(_event, { x, y }) => {
+        onDragStop={(_event, d) => {
           stopMoving();
           dispatch({
             type: 'moveFrame',
             payload: {
               id: id,
-              x,
-              y,
+              x: x + d.x - dragStartPosition.current.x,
+              y: y + d.y - dragStartPosition.current.y,
             },
           });
         }}
