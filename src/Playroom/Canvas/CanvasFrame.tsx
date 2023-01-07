@@ -165,15 +165,15 @@ export const CanvasFrame = ({
             },
           });
         }}
-        onResize={(_event, _direction, ref, _delta, { x, y }) => {
+        onResizeStop={(_event, _direction, ref, _delta, position) => {
           dispatch({
             type: 'moveFrame',
             payload: {
               id,
               width: ref.offsetWidth,
               height: ref.offsetHeight,
-              x,
-              y,
+              x: x + position.x,
+              y: y + position.y,
             },
           });
         }}
