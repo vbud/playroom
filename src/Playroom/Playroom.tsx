@@ -32,7 +32,7 @@ export default function Playroom({ components, snippets }: PlayroomProps) {
     editorView,
     editorWidth,
     showSnippets,
-    showChrome,
+    showCanvasOnly,
     cursorPosition,
     selectedFrameId,
     frames,
@@ -49,7 +49,7 @@ export default function Playroom({ components, snippets }: PlayroomProps) {
         !event.ctrlKey
       ) {
         event.preventDefault();
-        dispatch({ type: showChrome ? 'hideChrome' : 'showChrome' });
+        dispatch({ type: 'toggleShowCanvasOnly' });
       } else if (
         event.code === 'KeyK' &&
         event.metaKey &&
@@ -68,7 +68,7 @@ export default function Playroom({ components, snippets }: PlayroomProps) {
     return () => {
       document.removeEventListener('keydown', keyDownListener);
     };
-  }, [dispatch, showChrome]);
+  }, [dispatch, showCanvasOnly]);
 
   const updateEditorWidth = useDebouncedCallback((width: number) => {
     dispatch({
@@ -108,11 +108,11 @@ export default function Playroom({ components, snippets }: PlayroomProps) {
 
   return (
     <div className={styles.root}>
-      {showChrome && <Toolbar snippets={snippets} />}
+      {!showCanvasOnly && <Toolbar snippets={snippets} />}
       <div className={styles.main}>
         <Resizable
           className={classnames(styles.resizeableContainer, {
-            [styles.resizeableContainer_isHidden]: !showChrome,
+            [styles.resizeableContainer_isHidden]: showCanvasOnly,
           })}
           defaultSize={sizeStyles}
           size={sizeStyles}

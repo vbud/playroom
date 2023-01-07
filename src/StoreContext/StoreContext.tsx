@@ -51,7 +51,7 @@ export interface State {
   validCursorPosition: boolean;
   activeToolbarPanel?: ToolbarPanel;
   showSnippets: boolean;
-  showChrome: boolean;
+  showCanvasOnly: boolean;
   editorWidth: number;
   statusMessage?: StatusMessage;
   ready: boolean;
@@ -87,8 +87,7 @@ type Action =
   | { type: 'toggleToolbar'; payload: { panel: ToolbarPanel } }
   | { type: 'closeToolbar' }
   | { type: 'toggleSnippets' }
-  | { type: 'hideChrome' }
-  | { type: 'showChrome' }
+  | { type: 'toggleShowCanvasOnly' }
   | {
       type: 'copyToClipboard';
       payload: { url: string; trigger: 'toolbarItem' | 'previewPanel' };
@@ -328,19 +327,16 @@ const createReducer =
         };
       }
 
-      case 'hideChrome': {
-        return {
+      case 'toggleShowCanvasOnly': {
+        const newState = {
           ...state,
-          activeToolbarPanel: undefined,
-          showChrome: false,
+          showCanvasOnly: !state.showCanvasOnly,
         };
-      }
+        if (newState.showCanvasOnly) {
+          newState.activeToolbarPanel = undefined;
+        }
 
-      case 'showChrome': {
-        return {
-          ...state,
-          showChrome: true,
-        };
+        return newState;
       }
 
       case 'updateColorScheme': {
@@ -389,7 +385,7 @@ const initialState: State = {
   validCursorPosition: true,
   cursorPosition: 0,
   showSnippets: false,
-  showChrome: true,
+  showCanvasOnly: false,
   editorView: null,
   editorWidth: initialEditorWidth,
   ready: false,
