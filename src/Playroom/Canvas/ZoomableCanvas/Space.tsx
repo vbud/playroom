@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { ElementSizeChangePoller } from './ElementSizeChangePoller';
 import {
   getInteractableIdMostApplicableToElement,
   InteractableComponent,
@@ -13,7 +12,7 @@ import {
   PressInterpreter,
 } from './PressInterpreter';
 import { SpaceContext, SpaceContextType } from './SpaceContext';
-import { browserIsAndroid, generateRandomId, Writeable } from './utils';
+import { browserIsAndroid, generateRandomId } from './utils';
 import { PressEventCoordinates, ViewPort } from './ViewPort';
 
 export interface SpaceProps extends React.PropsWithChildren {
@@ -29,21 +28,6 @@ export interface SpaceProps extends React.PropsWithChildren {
    * Optional styles to set on the outer `div` that the `Space` renders.
    */
   readonly style?: React.CSSProperties;
-  /**
-   * Optional CSS class to use on the inner `div` that the `Space` scales and
-   * transforms.
-   */
-  readonly innerDivClassName?: string;
-  /**
-   * Optional styles class to use on the inner `div` that the `Space` scales
-   * and transforms.
-   */
-  readonly innerDivStyle?: React.CSSProperties;
-  /**
-   * If set, the `Space` will poll every 500ms for changes to its parent element's size. This only has to be used if the
-   * parent element can resize for reasons other than the window resizing, and if the `updateSize` is not used.
-   */
-  readonly pollForElementResizing?: boolean;
 
   /**
    * Called when the `Space` first creates the outer `div` and sets up the
@@ -87,22 +71,6 @@ export interface SpaceProps extends React.PropsWithChildren {
     e: MouseEvent,
     coordinates: PressEventCoordinates
   ) => void | boolean | undefined;
-
-  /**
-   * By default two finger trackpad gestures are always handled as a zoom
-   * in/zoom out, like with Google Maps.  If this is set to true, then
-   * only pinch/spread gestures will be handled like that, and pan style two
-   * finger gestures will be handled as a pan.
-   *
-   * However, this will cause mouse wheel interactions to behave like vertical
-   * panning rather than zoom in/zoom out.  There is sadly no great way around
-   * this, but there are some techniques you can use to guess whether the user
-   * is using a mouse or a trackpad.
-   *
-   * Note that this prop is only read during initial mounting.  Updates will
-   * be ignored.
-   */
-  readonly treatTwoFingerTrackPadGesturesLikeTouch?: boolean;
 }
 
 interface SpaceState {
@@ -131,10 +99,9 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
    * `Space` are first rendered. The `onUpdated` prop can be used to listen
    * for changes.
    */
-  // This is not really readonly but we want to make it appear that way for code
-  // using this library
-  public readonly viewPort?: ViewPort;
 
+  private viewPort?: ViewPort;
+  private resizeObserver: ResizeObserver;
   private readonly rootDivUniqueClassName = `react-zoomable-ui-${generateRandomId()}`;
 
   private readonly constantStyles = `
@@ -152,48 +119,33 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
 }
 `;
 
-  private outerDivRef?: HTMLDivElement;
+  private outerDivElement?: HTMLDivElement;
   private currentHoveredPressable?: Pressable;
-  private elementSizeChangePoller: ElementSizeChangePoller;
   private readonly interactableRegistry: Map<string, InteractableComponent>;
   private readonly pressInterpreter: PressInterpreter;
 
   public constructor(props: SpaceProps) {
     super(props);
-    this.interactableRegistry = new Map();
     this.state = {};
+
+    this.interactableRegistry = new Map();
+
+    // TODO: do we need to use `new` here?
+    // TODO: how often is this called? Can we make it less often?
+    this.resizeObserver = new ResizeObserver(() => this.updateSize());
 
     this.pressInterpreter = new PressInterpreter(
       this.handleDecideHowToHandlePress
     );
-    // This won't actually start polling until we give it an element, and tell
-    // it to start polling...
-    this.elementSizeChangePoller = new ElementSizeChangePoller(this.updateSize);
-  }
-
-  public componentDidUpdate(prevProps: SpaceProps) {
-    if (
-      this.props.pollForElementResizing !== prevProps.pollForElementResizing
-    ) {
-      this.elementSizeChangePoller.update(
-        this.outerDivRef,
-        !!this.props.pollForElementResizing
-      );
-    }
   }
 
   public componentWillUnmount() {
     this.destroyViewPort();
+    // TODO: is this necessary?
+    this.resizeObserver.disconnect();
   }
 
   public render() {
-    let transformedDivStyle = this.state.transformStyle;
-    if (this.props.innerDivStyle) {
-      transformedDivStyle = {
-        ...transformedDivStyle,
-        ...this.props.innerDivStyle,
-      };
-    }
     return (
       <div
         ref={this.setOuterDivRefAndCreateViewPort}
@@ -207,10 +159,8 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
         {this.state.contextValue && (
           <SpaceContext.Provider value={this.state.contextValue}>
             <div
-              className={`react-zoomable-ui-inner-div ${
-                this.props.innerDivClassName || ''
-              }`}
-              style={transformedDivStyle}
+              className="react-zoomable-ui-inner-div"
+              style={this.state.transformStyle}
             >
               {this.props.children}
             </div>
@@ -220,11 +170,7 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
     );
   }
 
-  /**
-   * This should be called in some cases to tell the `Space` that its parent
-   * element has resized. See the [Guide](../../Guide.md) for more info.
-   */
-  public updateSize = () => {
+  private updateSize = () => {
     if (this.viewPort) {
       this.viewPort.updateContainerSize();
     }
@@ -244,14 +190,19 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
   private destroyViewPort = () => {
     if (this.viewPort) {
       this.viewPort.destroy();
-      (this as Writeable<Space>).viewPort = undefined;
+      this.viewPort = undefined;
     }
 
-    if (this.outerDivRef) {
-      this.outerDivRef.removeEventListener('dragstart', this.handleDragStart);
+    if (this.outerDivElement) {
+      this.outerDivElement.removeEventListener(
+        'dragstart',
+        this.handleDragStart
+      );
     }
 
-    this.elementSizeChangePoller?.reset();
+    if (this.outerDivElement) {
+      this.resizeObserver.unobserve(this.outerDivElement);
+    }
   };
 
   private handleDragStart = (e: DragEvent) => {
@@ -261,7 +212,7 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
     // See this link for more info:
     // https://stackoverflow.com/questions/3873595/how-to-disable-firefoxs-default-drag-and-drop-on-all-images-behavior-with-jquer
     //
-    // This additionally prevents another weird-o case of double clicking to
+    // This additionally prevents another weird case of double clicking to
     // select text in Desktop Safari and then long clicking and dragging. This
     // will enter some sorta drag state where all the text is being dragged.
     // This is bad and it also conflicts with our <Pressable> components.
@@ -393,36 +344,29 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
     }
   };
 
-  private setOuterDivRefAndCreateViewPort = (ref: any) => {
+  private setOuterDivRefAndCreateViewPort = (node: HTMLDivElement) => {
     this.destroyViewPort();
-    this.outerDivRef = ref;
+    this.outerDivElement = node;
 
-    if (this.outerDivRef) {
-      (this as Writeable<Space>).viewPort = new ViewPort(this.outerDivRef, {
+    this.resizeObserver.observe(this.outerDivElement);
+
+    if (this.outerDivElement) {
+      this.viewPort = new ViewPort(this.outerDivElement, {
         onHover: this.handleHover,
         onContextMenu: this.handleContextMenu,
         onUpdated: this.handleViewPortUpdated,
         ...this.pressInterpreter.pressHandlers,
-        treatTwoFingerTrackPadGesturesLikeTouch:
-          this.props.treatTwoFingerTrackPadGesturesLikeTouch,
       });
 
-      this.props.onCreate?.(this.viewPort!);
+      this.props.onCreate?.(this.viewPort);
 
-      this.outerDivRef.addEventListener('dragstart', this.handleDragStart);
-
-      // Polling is optional because it is unnecessary if the only way the div's
-      // size will change is with the window itself
-      this.elementSizeChangePoller.update(
-        this.outerDivRef,
-        !!this.props.pollForElementResizing
-      );
+      this.outerDivElement.addEventListener('dragstart', this.handleDragStart);
 
       const contextValue: SpaceContextType = {
         rootDivUniqueClassName: this.rootDivUniqueClassName,
         registerInteractable: (i) => this.interactableRegistry.set(i.id, i),
         unregisterInteractable: (i) => this.interactableRegistry.delete(i.id),
-        viewPort: this.viewPort!,
+        viewPort: this.viewPort,
       };
 
       this.setState({

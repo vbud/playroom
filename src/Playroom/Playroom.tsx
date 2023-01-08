@@ -11,15 +11,16 @@ import {
 } from 'src/StoreContext/StoreContext';
 import { CodeEditor } from './CodeEditor/CodeEditor';
 import { Canvas } from './Canvas/Canvas';
+import { Text } from './Text/Text';
 import SnippetBrowser from './SnippetBrowser/SnippetBrowser';
 import { useClickOutside } from 'src/utils/useClickOutside';
 import { formatAndInsert } from 'src/utils/formatting';
 import { isValidLocation } from 'src/utils/cursor';
 import componentsToHints, { Components } from 'src/utils/componentsToHints';
+import { isMetaOrCtrlExclusivelyPressed } from 'src/utils/modifierKeys';
 import { Snippets } from 'utils';
 
 import * as styles from './Playroom.css';
-import { Text } from './Text/Text';
 
 export interface PlayroomProps {
   components: Components;
@@ -40,24 +41,12 @@ export default function Playroom({ components, snippets }: PlayroomProps) {
   } = state;
 
   useEffect(() => {
-    const keyDownListener = (event: KeyboardEvent) => {
-      if (
-        event.code === 'Backslash' &&
-        event.metaKey &&
-        !event.shiftKey &&
-        !event.altKey &&
-        !event.ctrlKey
-      ) {
-        event.preventDefault();
+    const keyDownListener = (e: KeyboardEvent) => {
+      if (e.code === 'Backslash' && isMetaOrCtrlExclusivelyPressed(e)) {
+        e.preventDefault();
         dispatch({ type: 'toggleShowCanvasOnly' });
-      } else if (
-        event.code === 'KeyK' &&
-        event.metaKey &&
-        !event.shiftKey &&
-        !event.altKey &&
-        !event.ctrlKey
-      ) {
-        event.preventDefault();
+      } else if (e.code === 'KeyK' && isMetaOrCtrlExclusivelyPressed(e)) {
+        e.preventDefault();
         dispatch({
           type: 'toggleSnippets',
         });

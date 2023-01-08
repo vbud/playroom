@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useRef } from 'react';
 import classNames from 'classnames';
-import { NoPanArea, ViewPortCameraInterface } from './ZoomableCanvas';
+import { NoPanArea } from './ZoomableCanvas';
 import { Rnd } from 'react-rnd';
 
 import { Frame } from '../Frame/Frame';
@@ -43,7 +43,6 @@ interface CanvasFrameProps {
   selectedFrameId: SelectedFrameId;
   scale: number;
   canvasEl: HTMLDivElement | null;
-  canvasViewportCamera: ViewPortCameraInterface | null;
 }
 
 export const CanvasFrame = ({
@@ -52,9 +51,8 @@ export const CanvasFrame = ({
   selectedFrameId,
   scale,
   canvasEl,
-  canvasViewportCamera,
 }: CanvasFrameProps) => {
-  const [_, dispatch] = useContext(StoreContext);
+  const [{ canvasViewport }, dispatch] = useContext(StoreContext);
 
   const dragStartPosition = React.useRef({ x: 0, y: 0 });
   const canvasClientRect = useRef<DOMRect | null>(null);
@@ -76,8 +74,8 @@ export const CanvasFrame = ({
       direction,
       interval: setInterval(
         () =>
-          canvasViewportCamera &&
-          canvasViewportCamera.moveBy(x * moveMultiplier, y * moveMultiplier),
+          canvasViewport &&
+          canvasViewport.camera.moveBy(x * moveMultiplier, y * moveMultiplier),
         1
       ),
     };

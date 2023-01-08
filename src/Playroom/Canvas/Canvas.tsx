@@ -25,7 +25,6 @@ export const Canvas = ({
   const [{ canvasPosition }, dispatch] = useContext(StoreContext);
 
   const canvasRef = useRef<HTMLDivElement>(null);
-  const spaceRef = useRef<Space | null>(null);
 
   const onSpaceUpdate = useDebouncedCallback((vp) => {
     dispatch({
@@ -41,7 +40,6 @@ export const Canvas = ({
       onMouseDown={() => dispatch({ type: 'selectFrame', payload: undefined })}
     >
       <Space
-        ref={spaceRef}
         onCreate={(viewport) => {
           dispatch({
             type: 'initializeCanvas',
@@ -61,7 +59,6 @@ export const Canvas = ({
             selectedFrameId={selectedFrameId}
             scale={canvasPosition.zoom}
             canvasEl={canvasRef.current}
-            canvasViewportCamera={spaceRef.current?.viewPort?.camera ?? null}
           />
         ))}
       </Space>

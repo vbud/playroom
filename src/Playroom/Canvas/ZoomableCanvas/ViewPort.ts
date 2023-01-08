@@ -1,5 +1,6 @@
 import Hammer from 'hammerjs';
 
+import { isMetaOrCtrlExclusivelyPressed } from 'src/utils/modifierKeys';
 import { browserIsSafariDesktop, isMouseEvent } from './utils';
 import {
   ViewPortCamera,
@@ -122,31 +123,6 @@ export interface ViewPortOptions {
     e: MouseEvent,
     coordinates: PressEventCoordinates
   ) => void;
-
-  /**
-   * By default two finger trackpad gestures are always handled as a zoom
-   * in/zoom out, like with Google Maps.  If this is set to true, then
-   * only pinch/spread gestures will be handled like that, and pan style two
-   * finger gestures will be handled as a pan.
-   *
-   * However, this will cause mouse wheel interactions to behave like vertical
-   * panning rather than zoom in/zoom out.  There is sadly no great way around
-   * this, but there are some techniques you can use to guess whether the user
-   * is using a mouse or a trackpad.
-   */
-  readonly treatTwoFingerTrackPadGesturesLikeTouch?: boolean;
-
-  /**
-   * By default right clicks with mice (and two finger taps with trackpads) are
-   * sent to `onContextMenu`.  If this is set to true, then instead of that
-   * they will begin a pan gesture.  The user can thus, right click and drag
-   * the mouse to pan (or use two fingers and tap and drag on a trackpad).
-   *
-   * Note that if this is true `onContextMenu` will not be called, and none of
-   * the other other "press" callbacks passed as part of this options object
-   * will be called for the pan gesture (e.g. `onPressStart`).
-   */
-  readonly treatRightClickAsPan?: boolean;
 }
 
 /**
@@ -157,8 +133,6 @@ export interface ViewPortOptions {
  * You can think of the view port as describing what rectangular portion of the
  * virtual space (from top left to bottom right) should be visible inside the
  * bounds of containing HTML element where the virtual space is being rendered.
- *
- * Please see the [ Guide ](../../Guide.md) for more details.
  */
 export class ViewPort {
   // While these public properties APPEAR readonly they are in fact NOT. They
@@ -190,17 +164,9 @@ export class ViewPort {
     startingCenterY: ClientPixelUnit;
     scale: ZoomFactor;
   };
-  // This is only used if the treatRightClickAsPan option is set to true.
-  // Note this is also for two finger trackpad tap and drag panning
-  private rightClickPanState?: {
-    lastClientX: number;
-    lastClientY: number;
-    velocityX: number;
-    velocityY: number;
-  };
   private hammer: HammerManager;
   private options?: ViewPortOptions;
-  private pressHandlingMode: undefined | 'rightclickpan' | 'capture' | 'ignore';
+  private pressHandlingMode: undefined | 'capture' | 'ignore';
 
   constructor(containerDiv: HTMLDivElement, options?: ViewPortOptions) {
     this.containerDiv = containerDiv;
@@ -256,14 +222,6 @@ export class ViewPort {
     this.containerDiv.addEventListener('touchend', this.handleTouchEnd);
     this.containerDiv.addEventListener('contextmenu', this.handleContextMenu);
 
-    // There is no good way to detect whether an individual element is
-    // resized. We can only do that at the window level. There are some
-    // techniques for tracking element sizes, and we provide an OPTIONAL
-    // polling based technique. But since watching for window resizes WILL
-    // work for many use cases we do that here, and it shouldn't interfere
-    // with any more specific techniques.
-    window.addEventListener('resize', this.updateContainerSize);
-
     this.containerDiv.addEventListener('wheel', this.handleWheel, {
       passive: false,
     });
@@ -283,8 +241,9 @@ export class ViewPort {
       );
     }
 
-    // Set up the pan-zoom library
-    // this.panZoomControl = panzoom(this.containerDiv, this.handlePanZoomEvent);
+    // TODO: replace hammer with something newer and better maintained?
+    // Maybe something that supports Safari Desktop so we can get rid of that code as well?
+    // Or even just use native browser events?
     this.hammer = new Hammer(this.containerDiv, {});
     // Press and tap almost do what we want, but not quite. See README.md for
     // more info.
@@ -323,7 +282,6 @@ export class ViewPort {
       'contextmenu',
       this.handleContextMenu
     );
-    window.removeEventListener('resize', this.updateContainerSize);
     this.containerDiv.removeEventListener('wheel', this.handleWheel);
 
     if (browserIsSafariDesktop) {
@@ -427,13 +385,10 @@ export class ViewPort {
     if (this.options?.debugEvents) {
       console.log(`ViewPort:handleContextMenu`);
     }
-    if (this.options?.treatRightClickAsPan) {
-      e.preventDefault();
-    } else {
-      this.options?.onContextMenu?.(e, this.getPressCoordinatesFromEvent(e));
-    }
+    this.options?.onContextMenu?.(e, this.getPressCoordinatesFromEvent(e));
   };
 
+  // TODO: is this still necessary? Safari might have improved since this was written.
   private handleGestureStartForDesktopSafari = (e: any) => {
     if (this.options?.debugEvents) {
       console.log(`ViewPort:handleGestureStartForDesktopSafari`);
@@ -618,14 +573,7 @@ export class ViewPort {
     }
 
     // e.buttons === 1 means the left/primary button is pressed and ONLY that
-    // e.buttons === 2
     const isLeftOnly = e.buttons === 1;
-    const isRightOnly = e.buttons === 2;
-    const shouldHandleAsPan =
-      isLeftOnly || (this.options?.treatRightClickAsPan && isRightOnly);
-    if (!shouldHandleAsPan) {
-      return;
-    }
 
     if (isLeftOnly) {
       this.pressHandlingMode = this.options?.onPressStart?.(
@@ -635,17 +583,6 @@ export class ViewPort {
       if (this.pressHandlingMode === 'capture') {
         e.preventDefault();
       }
-    } else if (isRightOnly) {
-      e.preventDefault();
-      // Sadly hammer.js doesn't give us an option to treat right clicks as
-      // pans so we have to make this work ourselves.
-      this.pressHandlingMode = 'rightclickpan';
-      this.rightClickPanState = {
-        lastClientX: e.clientX,
-        lastClientY: e.clientY,
-        velocityX: 0,
-        velocityY: 0,
-      };
     }
   };
 
@@ -670,28 +607,6 @@ export class ViewPort {
           }
         }
       }
-    } else if (this.pressHandlingMode === 'rightclickpan') {
-      if (e.buttons !== 2 || !this.rightClickPanState) {
-        // Intentionally don't do anything... maybe reset this.pressHandlingMode?
-      } else {
-        const dx = this.rightClickPanState.lastClientX - e.clientX;
-        const dy = this.rightClickPanState.lastClientY - e.clientY;
-        this.rightClickPanState.lastClientX = e.clientX;
-        this.rightClickPanState.lastClientY = e.clientY;
-        this.rightClickPanState.velocityX = dx;
-        this.rightClickPanState.velocityY = dy;
-
-        const clientBoundingRect = this.containerDiv.getBoundingClientRect();
-        const pointerContainerX = e.clientX - clientBoundingRect.left;
-        const pointerContainerY = e.clientY - clientBoundingRect.top;
-        this.camera.moveByInClientSpace(
-          dx,
-          dy,
-          0,
-          pointerContainerX,
-          pointerContainerY
-        );
-      }
     } else if (e.buttons === 0) {
       this.options?.onHover?.(e, this.getPressCoordinatesFromEvent(e));
     }
@@ -704,15 +619,8 @@ export class ViewPort {
     if (this.pressHandlingMode === 'capture' && this.options?.onPressEnd) {
       this.options?.onPressEnd(e, this.getPressCoordinatesFromEvent(e));
     }
-    if (this.pressHandlingMode === 'rightclickpan' && this.rightClickPanState) {
-      const dx = this.rightClickPanState.velocityX;
-      const dy = this.rightClickPanState.velocityY;
-
-      this.camera.moveWithDecelerationInClientSpace(dx, dy);
-    }
 
     this.pressHandlingMode = undefined;
-    this.rightClickPanState = undefined;
   };
 
   private handleTouchStart = (e: TouchEvent) => {
@@ -768,13 +676,9 @@ export class ViewPort {
 
     e.preventDefault();
 
-    let isPrimarilyZoom = true;
-    if (this.options?.treatTwoFingerTrackPadGesturesLikeTouch) {
-      // For whatever reason, desktop browsers send pinch gestures with ctrlKey set to true.
-      isPrimarilyZoom = e.ctrlKey;
-    }
+    const isZoom = isMetaOrCtrlExclusivelyPressed(e);
 
-    if (isPrimarilyZoom) {
+    if (isZoom) {
       let scale = e.ctrlKey ? 5 : 1; // This feels more right...
       switch (e.deltaMode) {
         case 1: // DOM_DELTA_LINE

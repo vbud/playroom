@@ -1,5 +1,3 @@
-export type Writeable<T> = { -readonly [P in keyof T]: T[P] };
-
 let idSuffix = 0;
 /**
  * This id should be safe to use as a class name. So don't use any special
