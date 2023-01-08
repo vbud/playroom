@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useRef } from 'react';
 import classNames from 'classnames';
-import { NoPanArea, ViewPortCameraInterface } from 'react-zoomable-ui';
+import { NoPanArea, ViewPortCameraInterface } from './ZoomableCanvas';
 import { Rnd } from 'react-rnd';
 
 import { Frame } from '../Frame/Frame';

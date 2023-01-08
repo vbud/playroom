@@ -1,5 +1,5 @@
 import React, { useContext, useRef } from 'react';
-import { Space } from 'react-zoomable-ui';
+import { Space } from './ZoomableCanvas';
 import { useDebouncedCallback } from 'use-debounce';
 
 import {

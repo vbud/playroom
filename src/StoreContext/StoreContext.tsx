@@ -13,7 +13,7 @@ import { v4 as uuid } from 'uuid';
 import { isValidLocation } from '../utils/cursor';
 import playroomConfig from '../config';
 import { ColorScheme, useColorScheme } from 'src/utils/colorScheme';
-import { ViewPort } from 'react-zoomable-ui';
+import { ViewPort } from 'src/Playroom/Canvas/ZoomableCanvas';
 
 export const store = localforage.createInstance({
   name: playroomConfig.storageKey,
