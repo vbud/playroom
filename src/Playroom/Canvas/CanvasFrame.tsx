@@ -132,12 +132,22 @@ export const CanvasFrame = ({
     }
   };
 
+  const isSelected = id === selectedFrameId;
+
   return (
-    <NoPanArea style={{ transform: `translate(${x}px,${y}px)` }}>
+    <NoPanArea
+      style={{
+        transform: `translate(${x}px,${y}px)`,
+        ...(isSelected && {
+          position: 'absolute',
+          zIndex: 1,
+        }),
+      }}
+    >
       <Rnd
         ref={focusIfSelected}
         className={classNames(styles.root, {
-          [styles.selected]: id === selectedFrameId,
+          [styles.selected]: isSelected,
         })}
         size={{ width, height }}
         position={{ x: 0, y: 0 }}
