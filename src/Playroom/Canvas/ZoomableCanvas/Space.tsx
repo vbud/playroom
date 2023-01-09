@@ -117,8 +117,6 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
 
     this.interactableRegistry = new Map();
 
-    // TODO: do we need to use `new` here?
-    // TODO: how often is this called? Can we make it less often?
     this.resizeObserver = new ResizeObserver(() => this.updateSize());
 
     this.pressInterpreter = new PressInterpreter(
@@ -128,8 +126,6 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
 
   public componentWillUnmount() {
     this.destroyViewPort();
-    // TODO: is this necessary?
-    this.resizeObserver.disconnect();
   }
 
   public render() {
@@ -179,9 +175,7 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
         'dragstart',
         this.handleDragStart
       );
-    }
 
-    if (this.outerDivElement) {
       this.resizeObserver.unobserve(this.outerDivElement);
     }
   };

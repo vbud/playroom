@@ -21,7 +21,5 @@ export interface SpaceContextType {
  * See `SpaceContextType` for the type of the data.
  */
 export const SpaceContext = React.createContext<SpaceContextType>(
-  // TODO: provide argument and view link in createContext type definition that describes why.
-  // Can I wait to call createContext until I have all the values? See what other libraries do.
   undefined as any
 );

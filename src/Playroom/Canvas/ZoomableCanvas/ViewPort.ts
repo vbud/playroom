@@ -388,7 +388,6 @@ export class ViewPort {
     this.options?.onContextMenu?.(e, this.getPressCoordinatesFromEvent(e));
   };
 
-  // TODO: is this still necessary? Safari might have improved since this was written.
   private handleGestureStartForDesktopSafari = (e: any) => {
     if (this.options?.debugEvents) {
       console.log(`ViewPort:handleGestureStartForDesktopSafari`);
