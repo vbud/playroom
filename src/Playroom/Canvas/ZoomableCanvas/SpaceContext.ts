@@ -7,7 +7,6 @@ import { ViewPort } from './ViewPort';
  * The type of the `SpaceContext` data.
  */
 export interface SpaceContextType {
-  readonly rootDivUniqueClassName: string;
   readonly registerInteractable: (interactable: InteractableComponent) => void;
   readonly viewPort: ViewPort;
   readonly unregisterInteractable: (

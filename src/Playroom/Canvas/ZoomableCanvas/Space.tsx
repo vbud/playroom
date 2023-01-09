@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import * as React from 'react';
 
 import {
@@ -12,8 +13,10 @@ import {
   PressInterpreter,
 } from './PressInterpreter';
 import { SpaceContext, SpaceContextType } from './SpaceContext';
-import { browserIsAndroid, generateRandomId } from './utils';
+import { browserIsAndroid } from './utils';
 import { PressEventCoordinates, ViewPort } from './ViewPort';
+
+import * as styles from './Space.css';
 
 export interface SpaceProps extends React.PropsWithChildren {
   /**
@@ -102,22 +105,6 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
 
   private viewPort?: ViewPort;
   private resizeObserver: ResizeObserver;
-  private readonly rootDivUniqueClassName = `react-zoomable-ui-${generateRandomId()}`;
-
-  private readonly constantStyles = `
-.${this.rootDivUniqueClassName} {
-  position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
-  cursor: default;
-}
-
-.${this.rootDivUniqueClassName} > .react-zoomable-ui-inner-div {
-  margin: 0; padding: 0; 
-  transform-origin: 0% 0%;
-  min-height: 100%;
-  width: 100%;
-}
-`;
 
   private outerDivElement?: HTMLDivElement;
   private currentHoveredPressable?: Pressable;
@@ -150,18 +137,12 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
       <div
         ref={this.setOuterDivRefAndCreateViewPort}
         id={this.props.id}
-        className={`react-zoomable-ui-outer-div ${
-          this.rootDivUniqueClassName
-        } ${this.props.className || ''}`}
+        className={classNames(styles.root, this.props.className)}
         style={this.props.style}
       >
-        <style>{this.constantStyles}</style>
         {this.state.contextValue && (
           <SpaceContext.Provider value={this.state.contextValue}>
-            <div
-              className="react-zoomable-ui-inner-div"
-              style={this.state.transformStyle}
-            >
+            <div className={styles.inner} style={this.state.transformStyle}>
               {this.props.children}
             </div>
           </SpaceContext.Provider>
@@ -363,7 +344,6 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
       this.outerDivElement.addEventListener('dragstart', this.handleDragStart);
 
       const contextValue: SpaceContextType = {
-        rootDivUniqueClassName: this.rootDivUniqueClassName,
         registerInteractable: (i) => this.interactableRegistry.set(i.id, i),
         unregisterInteractable: (i) => this.interactableRegistry.delete(i.id),
         viewPort: this.viewPort,

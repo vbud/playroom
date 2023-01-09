@@ -1,8 +1,10 @@
 import * as React from 'react';
+import classNames from 'classnames';
 
 import { InteractableIdAttributeName } from './Interactable';
 import { SpaceContext, SpaceContextType } from './SpaceContext';
-import { generateRandomId } from './utils';
+
+import * as styles from './NoPanArea.css';
 
 export interface NoPanAreaProps extends React.PropsWithChildren {
   readonly id?: string;
@@ -26,23 +28,12 @@ export interface NoPanAreaProps extends React.PropsWithChildren {
 export class NoPanArea extends React.PureComponent<NoPanAreaProps> {
   public static contextType = SpaceContext;
   public readonly context!: SpaceContextType;
-  public readonly id = generateRandomId();
+  public readonly id = crypto.randomUUID();
 
-  private readonly constantStyles: string;
   private divRef: React.RefObject<HTMLDivElement> = React.createRef();
-  private readonly uniqueClassName = `react-zoomable-ui-no-pan-area-${this.id}`;
 
   public constructor(props: NoPanAreaProps, context: SpaceContextType) {
     super(props);
-    this.constantStyles = `
-div.${context.rootDivUniqueClassName} div.${this.uniqueClassName} {
-  -ms-touch-action: default;
-  -webkit-user-select: text;
-  -webkit-touch-callout: default;
-  user-select: text;
-  cursor: auto;
-} 
-`;
   }
 
   public componentDidMount() {
@@ -54,29 +45,19 @@ div.${context.rootDivUniqueClassName} div.${this.uniqueClassName} {
   }
 
   public render() {
-    const { style } = this.props;
+    const { id, children, className, style } = this.props;
     return (
       <React.Fragment>
-        <style>{this.constantStyles}</style>
         <div
-          id={this.props.id}
+          id={id}
           {...{ [InteractableIdAttributeName]: this.id }}
-          className={this.determineClassName()}
+          className={classNames(styles.root, className)}
           style={style}
           ref={this.divRef}
         >
-          {this.props.children}
+          {children}
         </div>
       </React.Fragment>
     );
   }
-
-  private determineClassName = () => {
-    const { className } = this.props;
-    if (className) {
-      return `${className} ${this.uniqueClassName}`;
-    } else {
-      return this.uniqueClassName;
-    }
-  };
 }

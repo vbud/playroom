@@ -6,7 +6,6 @@ import {
   PressHandlingOptions,
 } from './PressInterpreter';
 import { SpaceContext, SpaceContextType } from './SpaceContext';
-import { generateRandomId } from './utils';
 import { PressEventCoordinates } from './ViewPort';
 
 const DEFAULT_LONG_TAP_THRESHOLD_MS: number = 500;
@@ -99,7 +98,7 @@ export class Pressable extends React.PureComponent<
   public static contextType = SpaceContext;
   public readonly context!: SpaceContextType;
   public readonly divRef: React.RefObject<HTMLDivElement> = React.createRef();
-  public readonly id = generateRandomId();
+  public readonly id = crypto.randomUUID();
   public readonly state: PressableState = {
     interaction: undefined,
     hovered: false,

@@ -1,11 +1,3 @@
-let idSuffix = 0;
-/**
- * This id should be safe to use as a class name. So don't use any special
- * characters that CSS might get confused by.
- */
-export const generateRandomId = () =>
-  Math.random().toString(36).slice(2) + '_' + ++idSuffix;
-
 export function clamp(
   value: number,
   bounds?: readonly [number | undefined, number | undefined]

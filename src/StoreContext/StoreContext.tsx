@@ -8,7 +8,6 @@ import React, {
 import { EditorView } from 'codemirror';
 import copy from 'copy-to-clipboard';
 import localforage from 'localforage';
-import { v4 as uuid } from 'uuid';
 
 import { isValidLocation } from '../utils/cursor';
 import playroomConfig from '../config';
@@ -168,7 +167,7 @@ const createReducer =
       }
 
       case 'addFrame': {
-        const newFrameId = uuid();
+        const newFrameId = crypto.randomUUID();
         const frames = {
           ...state.frames,
           [newFrameId]: {
