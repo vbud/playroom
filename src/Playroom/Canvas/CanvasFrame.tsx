@@ -87,28 +87,33 @@ export const CanvasFrame = ({
     }
   };
 
-  const panIfDraggingOutsideCanvas = (mouseX: number, mouseY: number) => {
+  const panIfDraggingBeyondBoundary = (mouseX: number, mouseY: number) => {
     if (!canvasClientRect.current) return;
 
+    // Determines the boundaries near the edges of the canvas where a drag should trigger canvas panning.
+    const boundaryBuffer = 16;
     const { left, top, right, bottom } = canvasClientRect.current;
-
+    const leftBoundary = left + boundaryBuffer;
+    const topBoundary = top + boundaryBuffer;
+    const rightBoundary = right - boundaryBuffer;
+    const bottomBoundary = bottom - boundaryBuffer;
     let direction: MoveInterval['direction'] | undefined;
 
-    if (mouseX < left && mouseY < top) {
+    if (mouseX < leftBoundary && mouseY < topBoundary) {
       direction = 'leftUp';
-    } else if (mouseX > right && mouseY < top) {
+    } else if (mouseX > rightBoundary && mouseY < topBoundary) {
       direction = 'rightUp';
-    } else if (mouseX > right && mouseY > bottom) {
+    } else if (mouseX > rightBoundary && mouseY > bottomBoundary) {
       direction = 'rightDown';
-    } else if (mouseX < left && mouseY > bottom) {
+    } else if (mouseX < leftBoundary && mouseY > bottomBoundary) {
       direction = 'leftDown';
-    } else if (mouseY < top) {
+    } else if (mouseY < topBoundary) {
       direction = 'up';
-    } else if (mouseX > right) {
+    } else if (mouseX > rightBoundary) {
       direction = 'right';
-    } else if (mouseY > bottom) {
+    } else if (mouseY > bottomBoundary) {
       direction = 'down';
-    } else if (mouseX < left) {
+    } else if (mouseX < leftBoundary) {
       direction = 'left';
     }
 
@@ -160,7 +165,7 @@ export const CanvasFrame = ({
         }}
         onDrag={(event) => {
           const { clientX, clientY } = event as MouseEvent;
-          panIfDraggingOutsideCanvas(clientX, clientY);
+          panIfDraggingBeyondBoundary(clientX, clientY);
         }}
         onDragStop={(_event, d) => {
           stopMoving();
