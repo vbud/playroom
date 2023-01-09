@@ -241,9 +241,6 @@ export class ViewPort {
       );
     }
 
-    // TODO: replace hammer with something newer and better maintained?
-    // Maybe something that supports Safari Desktop so we can get rid of that code as well?
-    // Or even just use native browser events?
     this.hammer = new Hammer(this.containerDiv, {});
     // Press and tap almost do what we want, but not quite. See README.md for
     // more info.
