@@ -6,14 +6,8 @@ import {
   InteractableComponent,
 } from './Interactable';
 import { NoPanArea } from './NoPanArea';
-import { Pressable } from './Pressable';
-import {
-  DecidePressHandlingCallback,
-  PressHandlingOptions,
-  PressInterpreter,
-} from './PressInterpreter';
+import { PressHandlingOptions, PressInterpreter } from './PressInterpreter';
 import { SpaceContext, SpaceContextType } from './SpaceContext';
-import { browserIsAndroid } from './utils';
 import { PressEventCoordinates, ViewPort } from './ViewPort';
 
 import * as styles from './Space.css';
@@ -45,35 +39,20 @@ export interface SpaceProps extends React.PropsWithChildren {
   readonly onUpdated?: (viewPort: ViewPort) => void;
 
   /**
-   * Optional callback to be called when a press is initiated in the space.
-   * Generally you should prefer to use `Pressable` to handle presses, but
-   * this can be used as a lower level alternative. The result of the callback
-   * is a `PressHandlingOptions` (or `undefined`) that describes how the
-   * press should be handled.
-   *
-   * If the callback returns a `PressHandlingOptions` it will take precedence
-   * over `Pressable` and `NoPanArea` components (even if the press was on
-   * one of those).
-   */
-  readonly onDecideHowToHandlePress?: DecidePressHandlingCallback;
-  /**
    * Called when a mouse hover event happens anywhere in the `Space`.
    */
   readonly onHover?: (
     e: MouseEvent,
     coordinates: PressEventCoordinates
   ) => void;
+
   /**
    * Called when a right click event happens anywhere in the `Space`.
-   *
-   * @returns Whether to prevent (`true`) a `Pressable` from also handling
-   * this event (if it was also the target).
-   *
    */
   readonly onContextMenu?: (
     e: MouseEvent,
     coordinates: PressEventCoordinates
-  ) => void | boolean | undefined;
+  ) => void;
 }
 
 interface SpaceState {
@@ -107,7 +86,6 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
   private resizeObserver: ResizeObserver;
 
   private outerDivElement?: HTMLDivElement;
-  private currentHoveredPressable?: Pressable;
   private readonly interactableRegistry: Map<string, InteractableComponent>;
   private readonly pressInterpreter: PressInterpreter;
 
@@ -189,18 +167,14 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
     //
     // This additionally prevents another weird case of double clicking to
     // select text in Desktop Safari and then long clicking and dragging. This
-    // will enter some sorta drag state where all the text is being dragged.
-    // This is bad and it also conflicts with our <Pressable> components.
-    if (e.target) {
-      const interactableId = getInteractableIdMostApplicableToElement(
-        e.target as any
-      );
+    // will enter a weird drag state where all the text is being dragged.
+    if (e.target instanceof HTMLElement) {
+      const interactableId = getInteractableIdMostApplicableToElement(e.target);
       const interactable =
         (interactableId && this.interactableRegistry.get(interactableId)) ||
         undefined;
 
-      // Suppress the drag _unless_ it is within a no pan handling area, then
-      // let it happen.
+      // Suppress the drag _unless_ it is within a NoPanArea, then let it happen.
       if (interactable && interactable instanceof NoPanArea) {
         // Intentionally do nothing
       } else {
@@ -213,102 +187,25 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
     e: MouseEvent | TouchEvent,
     coordinates: PressEventCoordinates
   ): PressHandlingOptions | undefined => {
-    if (this.props.onDecideHowToHandlePress) {
-      const result = this.props.onDecideHowToHandlePress(e, coordinates);
-      if (result) {
-        return result;
+    if (e.target instanceof HTMLElement) {
+      const interactableId = getInteractableIdMostApplicableToElement(e.target);
+      const interactable =
+        (interactableId && this.interactableRegistry.get(interactableId)) ||
+        undefined;
+
+      if (e.type === 'mousedown') {
+        const elementTagName = (e.target.tagName || '').toLowerCase();
+        if (elementTagName === 'a' || elementTagName === 'button') {
+          // Prevent dragging on these element because:
+          // 1) the browsers may interpret the drag end as a click on it
+          // 2) desktop Safari (possibly others) has its own drag handling for links which conflicts with what we are doing.
+          return { ignorePressEntirely: true };
+        }
       }
-    }
 
-    const interactableId = getInteractableIdMostApplicableToElement(
-      e.target as any
-    );
-    const interactable =
-      (interactableId && this.interactableRegistry.get(interactableId)) ||
-      undefined;
-
-    if (e.type === 'mousedown') {
-      const elementTagName = (
-        (e.target && (e.target as any).tagName) ||
-        ''
-      ).toLowerCase();
-      if (elementTagName === 'a' || elementTagName === 'button') {
-        // Prevent dragging on these elements A. the browsers may interpret the
-        // drag end as a click on it and B. desktop Safari (possibly others) has
-        // its own drag handling for links which conflicts with what we are
-        // doing.
+      if (interactable && interactable instanceof NoPanArea) {
         return { ignorePressEntirely: true };
       }
-    }
-
-    if (interactable && interactable instanceof NoPanArea) {
-      return { ignorePressEntirely: true };
-    } else if (interactable && interactable instanceof Pressable) {
-      return interactable.getPressHandlingConfig();
-    }
-    return undefined;
-  };
-
-  private handleHover = (e: MouseEvent, coordinates: PressEventCoordinates) => {
-    const interactableId = getInteractableIdMostApplicableToElement(
-      e.target as any
-    );
-    const interactable =
-      (interactableId && this.interactableRegistry.get(interactableId)) ||
-      undefined;
-    if (interactable && interactable instanceof Pressable) {
-      if (interactable !== this.currentHoveredPressable) {
-        this.currentHoveredPressable = interactable;
-        this.currentHoveredPressable.setHovered(true);
-      }
-    } else if (this.currentHoveredPressable) {
-      this.currentHoveredPressable.setHovered(false);
-      this.currentHoveredPressable = undefined;
-    }
-
-    if (this.props.onHover) {
-      this.props.onHover(e, coordinates);
-    }
-  };
-
-  private handleContextMenu = (
-    e: MouseEvent,
-    coordinates: PressEventCoordinates
-  ) => {
-    if (this.props.onContextMenu) {
-      const result = this.props.onContextMenu(e, coordinates);
-      e.preventDefault();
-      if (result) {
-        return;
-      }
-    }
-
-    const interactableId = getInteractableIdMostApplicableToElement(
-      e.target as any
-    );
-    const interactable =
-      (interactableId && this.interactableRegistry.get(interactableId)) ||
-      undefined;
-
-    if (
-      interactable &&
-      interactable instanceof Pressable &&
-      interactable.props.onContextMenu
-    ) {
-      interactable.props.onContextMenu(coordinates);
-      e.preventDefault();
-      return;
-    }
-
-    // We have to prevent default this in a few cases on Android because it can
-    // interfere w/ panning
-    if (browserIsAndroid) {
-      if (interactable && interactable instanceof NoPanArea) {
-        // Don't do anything
-      } else {
-        e.preventDefault();
-      }
-      return;
     }
   };
 
@@ -327,8 +224,7 @@ export class Space extends React.PureComponent<SpaceProps, SpaceState> {
 
     if (this.outerDivElement) {
       this.viewPort = new ViewPort(this.outerDivElement, {
-        onHover: this.handleHover,
-        onContextMenu: this.handleContextMenu,
+        onContextMenu: this.props.onContextMenu,
         onUpdated: this.handleViewPortUpdated,
         ...this.pressInterpreter.pressHandlers,
       });

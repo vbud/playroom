@@ -30,7 +30,7 @@ const POTENTIAL_TAP_BOUNDS_DEFAULT: ClientPixelUnit = 8;
  * `undefined`) detailing how the `PressInterpreter` should handle the
  * press.
  */
-export type DecidePressHandlingCallback = (
+type DecidePressHandlingCallback = (
   e: MouseEvent | TouchEvent,
   coordinates: PressEventCoordinates
 ) => PressHandlingOptions | undefined;
@@ -79,7 +79,7 @@ export interface PressHandlingOptions {
 
 /**
  * If you are using `Space` then you don't need to use or interact directly with this class.  It is used
- * internally by `Space` along with `Pressable` to interpret and respond to presses.
+ * internally by `Space` to interpret and respond to presses.
  *
  * On the other hand if you are using `ViewPort` without `Space` you may want to use this to
  * make handling interactions easier.

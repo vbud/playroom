@@ -273,9 +273,6 @@ export class ViewPortCamera {
     );
   }
 
-  /**
-   * This is not intended to be called by code outside of react-zoomable-ui itself.
-   */
   public handleContainerSizeChanged(
     width: ClientPixelUnit,
     height: ClientPixelUnit
@@ -344,11 +341,6 @@ export class ViewPortCamera {
     }
   }
 
-  /**
-   * This is not intended to be called by code outside of react-zoomable-ui
-   * itself. It is hidden in the `ViewPortCameraInterface` that is exported
-   * from this library.
-   */
   public setBounds(bounds: ViewPortBounds) {
     // We don't know how to deal with this when an animation is in progress so
     // we either cancel it or run it to completion.

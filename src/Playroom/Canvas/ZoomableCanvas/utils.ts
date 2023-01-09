@@ -71,7 +71,6 @@ export function* walkElementHierarchyUp(
   }
 }
 
-export const browserIsAndroid = navigator.userAgent.match(/Android/);
 export const browserIsSafari = navigator.vendor.match(/Apple/);
 export const browserIsSafariDesktop =
   browserIsSafari && typeof Touch === 'undefined';
