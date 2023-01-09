@@ -7,4 +7,3 @@ export * from './Space';
 export * from './SpaceContext';
 export * from './ViewPort';
 export * from './ViewPortCamera';
-export * from './suppressBrowserZooming';
