@@ -326,10 +326,10 @@ export class ViewPort {
   }
 
   public translateClientRectToVirtualSpace(
-    rectOrElement: ClientRect | HTMLElement
+    rectOrElement: DOMRect | HTMLElement
   ): VirtualSpaceRect {
     if (!(rectOrElement as any).getBoundingClientRect) {
-      const rect = rectOrElement as ClientRect;
+      const rect = rectOrElement as DOMRect;
 
       const clientBoundingRect = this.containerDiv.getBoundingClientRect();
       const containerX = rect.left - clientBoundingRect.left;

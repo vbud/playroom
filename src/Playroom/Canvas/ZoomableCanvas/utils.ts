@@ -51,11 +51,7 @@ export function parametricBlend(percent: number) {
   return a / (2.0 * (a - percent) + 1.0);
 }
 
-export function rectContainsPoint(
-  clientRect: ClientRect,
-  x: number,
-  y: number
-) {
+export function rectContainsPoint(clientRect: DOMRect, x: number, y: number) {
   return (
     clientRect.left < x &&
     clientRect.right > x &&
