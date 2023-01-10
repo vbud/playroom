@@ -106,7 +106,6 @@ export class PressInterpreter {
   private currentPressLongPressThresholdMet?: boolean;
   private capturePressTimerId?: any;
   private longPressTimerId?: any;
-  private readonly onDecideHowToHandlePress: DecidePressHandlingCallback;
 
   /**
    * If you are using a `Space` you do not need to create one of these, but
@@ -116,8 +115,9 @@ export class PressInterpreter {
    *
    * @param onDecideHowToHandlePress This callback decides how to handle presses.  See `DecidePressHandlingCallback` for more info.
    */
-  public constructor(onDecideHowToHandlePress: DecidePressHandlingCallback) {
-    this.onDecideHowToHandlePress = onDecideHowToHandlePress;
+  public constructor(
+    private readonly onDecideHowToHandlePress: DecidePressHandlingCallback
+  ) {
     this.pressHandlers = {
       onPressStart: this.handlePressStart,
       onPressMove: this.handlePressMove,

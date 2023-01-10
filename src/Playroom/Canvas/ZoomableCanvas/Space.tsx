@@ -28,9 +28,9 @@ export interface SpaceProps extends React.PropsWithChildren {
 
   /**
    * Called when the `Space` first creates the outer `div` and sets up the
-   * `ViewPort`, but before the inner `div` and the `Space's children have
-   * been first rendered. This can be used, for example, to make the
-   * `ViewPort` focus on a certain portion of the virtual space.
+   * `ViewPort`, but before the inner `div` and the `Space`'s children have been
+   * rendered. This can be used, for example, to make the `ViewPort` focus on a
+   * certain portion of the virtual space.
    */
   readonly onCreate?: (viewPort: ViewPort) => void;
   /**

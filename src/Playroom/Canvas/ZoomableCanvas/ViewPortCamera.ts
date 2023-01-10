@@ -1,9 +1,10 @@
 import { invariant } from 'ts-invariant';
-import { transitionNumber } from './utils';
+import { easeOutQuartic, parametricBlend, transitionNumber } from './utils';
 import {
   ClientPixelUnit,
   ViewPortBounds,
   VirtualSpacePixelUnit,
+  VirtualSpaceRect,
   ZoomFactor,
 } from './ViewPort';
 import { ViewPortMath } from './ViewPortMath';
@@ -66,14 +67,22 @@ export class ViewPortCamera {
   private animationFrameId?: number;
   private animation?: ViewPortCameraAnimation;
   private workingValues: ViewPortCameraValues;
-  private readonly values: ViewPortCameraValues;
-  private readonly onUpdated?: () => void;
 
   /**
    * This is only intended to be constructed by the `ViewPort`. Get an instance
    * via the `viewPort` property.
    */
-  constructor(values: ViewPortCameraValues, onUpdated?: () => void) {
+  constructor(
+    private readonly values: ViewPortCameraValues,
+    // This is used solely for the `centerFitElementIntoView` method. The logic for the translation
+    // needs access to the `containerDiv` and so lives in the `ViewPort`, but for library uses it
+    // makes somewhat more sense to have `centerFitElementIntoView` on this class. Perhaps the two
+    // classes should be merged at some point (or translation logic should move to this class?).
+    private readonly getElementVirtualSpaceCoordinates: (
+      element: HTMLElement
+    ) => VirtualSpaceRect,
+    private readonly onUpdated?: () => void
+  ) {
     const {
       containerWidth,
       containerHeight,
@@ -86,7 +95,6 @@ export class ViewPortCamera {
       zoomFactor,
     } = values;
 
-    this.values = values;
     this.workingValues = {
       containerWidth,
       containerHeight,
@@ -98,8 +106,6 @@ export class ViewPortCamera {
       height,
       zoomFactor,
     };
-
-    this.onUpdated = onUpdated;
 
     // Semi-sane default bounds...
     this.derivedBounds = { zoom: DEFAULT_BOUNDS };
@@ -130,7 +136,66 @@ export class ViewPortCamera {
     );
 
     if (!animationOptions) {
-      this.scheduleHardUpdate();
+      this.doImmediateUpdate();
+    } else {
+      this.scheduleAnimation(updateTarget, animationOptions);
+    }
+  }
+
+  public centerFitElementIntoView(
+    element: HTMLElement,
+    options?: {
+      elementExtraMarginForZoom?: VirtualSpacePixelUnit;
+      elementExtraMarginForZoomInClientSpace?: ClientPixelUnit;
+      additionalBounds?: Pick<ViewPortBounds, 'zoom'>;
+    },
+    animationOptions?: ViewPortCameraAnimationOptions
+  ): void {
+    if (!this.stopCurrentAnimation(StopAnimationKind.INTERRUPT)) {
+      return;
+    }
+
+    const area = this.getElementVirtualSpaceCoordinates(element);
+    if (options?.elementExtraMarginForZoom) {
+      area.top -= options.elementExtraMarginForZoom;
+      area.left -= options.elementExtraMarginForZoom;
+      area.bottom += options.elementExtraMarginForZoom;
+      area.right += options.elementExtraMarginForZoom;
+      area.width += options.elementExtraMarginForZoom * 2;
+      area.height += options.elementExtraMarginForZoom * 2;
+    }
+    const updateTarget = !animationOptions
+      ? this.workingValues
+      : { ...this.workingValues };
+    ViewPortMath.centerFitArea(
+      updateTarget,
+      this.derivedBounds,
+      area,
+      options?.additionalBounds
+    );
+
+    // This has to be done after the centerFitArea so we know what the final zoomFactor is
+    if (options?.elementExtraMarginForZoomInClientSpace) {
+      const additionalMargin =
+        options.elementExtraMarginForZoomInClientSpace /
+        updateTarget.zoomFactor;
+      area.top -= additionalMargin;
+      area.left -= additionalMargin;
+      area.bottom += additionalMargin;
+      area.right += additionalMargin;
+      area.width += additionalMargin * 2;
+      area.height += additionalMargin * 2;
+
+      ViewPortMath.centerFitArea(
+        updateTarget,
+        this.derivedBounds,
+        area,
+        options?.additionalBounds
+      );
+    }
+
+    if (!animationOptions) {
+      this.doImmediateUpdate();
     } else {
       this.scheduleAnimation(updateTarget, animationOptions);
     }
@@ -158,7 +223,7 @@ export class ViewPortCamera {
     );
 
     if (!animationOptions) {
-      this.scheduleHardUpdate();
+      this.doImmediateUpdate();
     } else {
       this.scheduleAnimation(updateTarget, animationOptions);
     }
@@ -197,7 +262,7 @@ export class ViewPortCamera {
     );
 
     if (!animationOptions) {
-      this.scheduleHardUpdate();
+      this.doImmediateUpdate();
     } else {
       this.scheduleAnimation(updateTarget, animationOptions);
     }
@@ -335,7 +400,7 @@ export class ViewPortCamera {
     );
 
     if (!animationOptions) {
-      this.scheduleHardUpdate();
+      this.doImmediateUpdate();
     } else {
       this.scheduleAnimation(updateTarget, animationOptions);
     }
@@ -381,7 +446,7 @@ export class ViewPortCamera {
     ViewPortMath.updateTopLeft(updateTarget, this.derivedBounds, x, y);
 
     if (!animationOptions) {
-      this.scheduleHardUpdate();
+      this.doImmediateUpdate();
     } else {
       this.scheduleAnimation(updateTarget, animationOptions);
     }
@@ -396,10 +461,6 @@ export class ViewPortCamera {
     if (percent >= 1) {
       this.copyValues(tv, this.workingValues);
     } else {
-      // Simple ease out quartic
-      const z = 1 - percent;
-      const p = 1 - z * z * z * z;
-
       // The reason we use `updateBy` with deltas is that when changing the zoom
       // factor, sometimes, like when it is already small, there is some weird
       // effect the math has where the animation appears to go down and to the
@@ -409,15 +470,23 @@ export class ViewPortCamera {
       // thus getting the wrong x and y positions.
       // Anyways, doing small updateBys like this is easier and is similar to
       // what happens when zooming in and out with the mouse wheel.
+
+      const xyModifiedPercent = easeOutQuartic(percent);
       const dx =
-        transitionNumber(sv.centerX, tv.centerX, p) -
+        transitionNumber(sv.centerX, tv.centerX, xyModifiedPercent) -
         this.workingValues.centerX;
       const dy =
-        transitionNumber(sv.centerY, tv.centerY, p) -
+        transitionNumber(sv.centerY, tv.centerY, xyModifiedPercent) -
         this.workingValues.centerY;
+
+      // If we are animating the x or y camera position AND the zoom, using this
+      // parametricBlend looks a lot better than doing the easeOutQuartic above.
+      // (If we are just animating zoom then easeOutQuartic is fine though.)
+      const zModifiedPercent = parametricBlend(percent * percent * percent);
       const dz =
-        transitionNumber(sv.zoomFactor, tv.zoomFactor, p) -
+        transitionNumber(sv.zoomFactor, tv.zoomFactor, zModifiedPercent) -
         this.workingValues.zoomFactor;
+
       ViewPortMath.updateBy(this.workingValues, this.derivedBounds, dx, dy, dz);
     }
   }
@@ -449,8 +518,27 @@ export class ViewPortCamera {
       ),
     };
     ViewPortMath.updateBounds(this.workingValues, this.derivedBounds);
-    this.scheduleHardUpdate();
+    this.doImmediateUpdate();
   };
+
+  private doImmediateUpdate() {
+    // If there was a pending animation it should have been committed before
+    // this was called (so that the working values could have been updated)
+    invariant(
+      !this.animation,
+      'Cannot do immediate update while an animation is in progress.'
+    );
+
+    // This probably shouldn't happen but JIC there is a pending callback lets cancel it
+    if (this.animationFrameId !== undefined) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = undefined;
+    }
+
+    // Apply value updates and broadcast the event
+    this.copyValues(this.workingValues, this.values);
+    this.onUpdated?.();
+  }
 
   private handleAnimationFrame = (time: number) => {
     this.animationFrameId = undefined;
@@ -474,7 +562,6 @@ export class ViewPortCamera {
     }
 
     this.copyValues(this.workingValues, this.values);
-
     this.onUpdated?.();
   };
 
@@ -497,18 +584,6 @@ export class ViewPortCamera {
       startingTimeMilliseconds: undefined,
       ...animationOptions,
     };
-    if (!this.animationFrameId) {
-      this.animationFrameId = requestAnimationFrame(this.handleAnimationFrame);
-    }
-  }
-
-  private scheduleHardUpdate() {
-    invariant(
-      !this.animation,
-      'Cannot schedule update while an animation is still in progress.'
-    );
-    // If there was a pending animation it should have been committed before
-    // this was called (so that the working values could have been updated)
     if (!this.animationFrameId) {
       this.animationFrameId = requestAnimationFrame(this.handleAnimationFrame);
     }

@@ -40,6 +40,17 @@ export function clampCenterOfLength(
   return centerValue;
 }
 
+export function easeOutQuartic(percent: number) {
+  const a = 1 - percent;
+  const b = 1 - a * a * a * a;
+  return b;
+}
+
+export function parametricBlend(percent: number) {
+  const a = percent * percent;
+  return a / (2.0 * (a - percent) + 1.0);
+}
+
 export function rectContainsPoint(
   clientRect: ClientRect,
   x: number,
