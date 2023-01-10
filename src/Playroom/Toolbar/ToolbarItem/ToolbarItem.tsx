@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react';
 import classnames from 'classnames';
-import TickIcon from '../../icons/TickIcon';
 
 import * as styles from './ToolbarItem.css';
 
@@ -8,7 +7,6 @@ interface Props {
   children: ReactNode;
   title: string;
   active?: boolean;
-  success?: boolean;
   disabled?: boolean;
   onClick: () => void;
   ['data-testid']?: string;
@@ -19,7 +17,6 @@ export default function ToolbarItem({
   title,
   active = false,
   disabled = false,
-  success = false,
   onClick,
   'data-testid': dataTestId,
 }: Props) {
@@ -38,11 +35,6 @@ export default function ToolbarItem({
       }}
     >
       {children}
-      {success && (
-        <span className={styles.successIndicator}>
-          <TickIcon size={8} />
-        </span>
-      )}
     </button>
   );
 }

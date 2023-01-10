@@ -25,7 +25,7 @@ export default function SettingsPanel() {
       <Stack space="large">
         <fieldset className={styles.fieldset}>
           <legend>
-            <Heading level="3">Color Scheme</Heading>
+            <Heading level="3">Color Mode</Heading>
           </legend>
           <div className={styles.radioContainer}>
             {['System', 'Light', 'Dark'].map((option) => (

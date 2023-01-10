@@ -82,7 +82,6 @@
     "re-resizable": "^6.9.0",
     "react-docgen-typescript": "^2.1.0",
     "react-rnd": "^10.4.1",
-    "react-use": "^17.2.1",
     "read-pkg-up": "^7.0.1",
     "style-mod": "^4.0.0",
     "ts-invariant": "^0.10.3",

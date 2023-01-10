@@ -1,1 +1,1 @@
-export const defaultIconSize = 16;
+export const defaultIconSize = 15;
