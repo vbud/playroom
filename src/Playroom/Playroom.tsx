@@ -18,11 +18,18 @@ import { formatAndInsert } from 'src/utils/formatting';
 import { isValidLocation } from 'src/utils/cursor';
 import componentsToHints, { Components } from 'src/utils/componentsToHints';
 import { isMetaOrCtrlExclusivelyPressed } from 'src/utils/modifierKeys';
-import { Snippets } from 'utils';
 
 import * as styles from './Playroom.css';
 
-export interface PlayroomProps {
+export interface Snippet {
+  group: string;
+  name: string;
+  code: string;
+}
+
+export type Snippets = Snippet[];
+
+interface PlayroomProps {
   components: Components;
   snippets: Snippets;
 }

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef } from 'react';
 import classnames from 'classnames';
 import fuzzy from 'fuzzy';
 import { useDebouncedCallback } from 'use-debounce';
-import { PlayroomProps } from '../Playroom';
+import { Snippets } from '../Playroom';
 import { Snippet } from 'utils';
 import { Components } from 'src/utils/componentsToHints';
 import SearchField from './SearchField/SearchField';
@@ -18,7 +18,7 @@ type ReturnedSnippet = Snippet;
 interface Props {
   ref: React.RefObject<HTMLDivElement>;
   components: Components;
-  snippets: PlayroomProps['snippets'];
+  snippets: Snippets;
   onSelectSnippet: (snippet: ReturnedSnippet) => void;
 }
 

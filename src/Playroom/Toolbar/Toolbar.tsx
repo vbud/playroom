@@ -1,6 +1,6 @@
 import React, { useContext, useRef } from 'react';
 
-import { PlayroomProps } from '../Playroom';
+import { Snippets } from '../Playroom';
 import { useClickOutside } from 'src/utils/useClickOutside';
 import { StoreContext } from 'src/StoreContext/StoreContext';
 import ToolbarItem from './ToolbarItem/ToolbarItem';
@@ -13,7 +13,7 @@ import SettingsIcon from '../icons/SettingsIcon';
 import * as styles from './Toolbar.css';
 
 interface Props {
-  snippets: PlayroomProps['snippets'];
+  snippets: Snippets;
 }
 
 export default function Toolbar({ snippets }: Props) {

@@ -1,5 +1,5 @@
 import { ComponentType } from 'react';
-import omit from 'lodash/omit';
+import { omit } from 'lodash';
 // @ts-ignore
 import parsePropTypes from 'parse-prop-types';
 

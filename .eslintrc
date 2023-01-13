@@ -1,7 +1,6 @@
 {
   "extends": "react-app",
   "globals": {
-    "__PLAYROOM_GLOBAL__CONFIG__": true,
     "__PLAYROOM_GLOBAL__STATIC_TYPES__": true
   },
   "overrides": [

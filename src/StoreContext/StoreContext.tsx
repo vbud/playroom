@@ -6,16 +6,15 @@ import React, {
   Dispatch,
 } from 'react';
 import { EditorView } from 'codemirror';
-import copy from 'copy-to-clipboard';
 import localforage from 'localforage';
 
 import { isValidLocation } from '../utils/cursor';
-import playroomConfig from '../config';
 import { ColorScheme, useColorScheme } from 'src/utils/colorScheme';
 import { ViewPort } from 'src/Playroom/Canvas/ZoomableCanvas';
 
 export const store = localforage.createInstance({
-  name: playroomConfig.storageKey,
+  // TODO: rename
+  name: 'playroom-example-mui',
   version: 1,
 });
 
@@ -87,10 +86,6 @@ type Action =
   | { type: 'closeToolbar' }
   | { type: 'toggleSnippets' }
   | { type: 'toggleShowCanvasOnly' }
-  | {
-      type: 'copyToClipboard';
-      payload: { url: string; trigger: 'toolbarItem' | 'previewPanel' };
-    }
   | { type: 'displayStatusMessage'; payload: StatusMessage }
   | { type: 'dismissMessage' }
   | {
@@ -262,23 +257,6 @@ const createReducer =
         return {
           ...state,
           statusMessage: undefined,
-        };
-      }
-
-      case 'copyToClipboard': {
-        const { url, trigger } = action.payload;
-
-        copy(url);
-
-        return {
-          ...state,
-          statusMessage:
-            trigger === 'toolbarItem'
-              ? {
-                  message: 'Copied to clipboard',
-                  tone: 'positive',
-                }
-              : undefined,
         };
       }
 
